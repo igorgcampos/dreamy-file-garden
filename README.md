@@ -31,20 +31,6 @@ Aplicação fullstack para upload, listagem, download e exclusão de arquivos na
 - [Docker](https://www.docker.com/get-started/)
 - [Google Cloud Service Account Key](https://cloud.google.com/iam/docs/creating-managing-service-account-keys)
 
-## Configuração
-
-1. **Configuração inicial para cada desenvolvedor:**
-   - Copie o arquivo `backend/.env.example` para `backend/.env` e preencha com os dados do seu projeto Google Cloud.
-   - Solicite o arquivo de chave de serviço do Google Cloud (`keyfile.json`) ao responsável pelo projeto ou gere conforme a documentação do Google.
-   - Coloque o arquivo `keyfile.json` dentro da pasta `backend/`.
-   - **Atenção:** Tanto o `.env` quanto o `keyfile.json` são arquivos sensíveis e não devem ser enviados ao repositório. Eles já estão protegidos pelo `.gitignore`.
-
-2. **Build e start com Docker Compose:**
-   
-   docker-compose up --build
-   
-   - Frontend: http://localhost
-   - Backend: http://localhost:3001
 
 ## Variáveis de ambiente do backend
 - `GCP_PROJECT`: ID do projeto Google Cloud
