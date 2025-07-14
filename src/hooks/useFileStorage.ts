@@ -72,6 +72,7 @@ export const useFileStorage = () => {
         title: 'Upload concluído',
         description: `${file.name} foi enviado com sucesso!`,
       });
+      await fetchFiles(); // Atualiza lista após upload
       return cloudFile;
     } catch (error) {
       setUploadProgress(prev => prev.map(p => p.fileId === fileId ? { ...p, status: 'error' } : p));
@@ -82,7 +83,7 @@ export const useFileStorage = () => {
       });
       throw error;
     }
-  }, []);
+  }, [fetchFiles]);
 
   // Delete file from backend
   const deleteFile = useCallback(async (fileId: string) => {
@@ -119,6 +120,7 @@ export const useFileStorage = () => {
     toast({
       title: 'Download iniciado',
       description: `Baixando ${file.name}...`,
+      duration: 3000,
     });
   }, []);
 
