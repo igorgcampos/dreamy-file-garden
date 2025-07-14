@@ -1,4 +1,4 @@
-# Dreamy File Garden
+# Interface web moderna para gerenciar arquivos no google cloud storage 
 
 Aplicação fullstack para upload, listagem, download e exclusão de arquivos na nuvem (Google Cloud Storage).
 
