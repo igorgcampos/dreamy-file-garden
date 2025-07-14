@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variáveis de ambiente e chaves sensíveis
+.env
+backend/.env
+backend/keyfile.json
