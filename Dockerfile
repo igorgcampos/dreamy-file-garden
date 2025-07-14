@@ -7,6 +7,7 @@ COPY tsconfig*.json ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./
 COPY .eslintrc* ./
+COPY index.html ./
 COPY ./src ./src
 COPY ./public ./public
 RUN npm install && npm run build
