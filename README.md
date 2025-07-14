@@ -2,6 +2,27 @@
 
 Aplicação fullstack para upload, listagem, download e exclusão de arquivos na nuvem (Google Cloud Storage).
 
+## Passo a passo para deploy/local setup
+
+1. **Clone o repositório:**
+
+   git clone <URL_DO_REPOSITORIO>
+   cd dreamy-file-garden
+   
+
+2. **Configuração inicial:**
+   - Copie o arquivo `backend/.env.example` para `backend/.env` e preencha com os dados do seu projeto Google Cloud.
+   - Solicite o arquivo de chave de serviço do Google Cloud (`keyfile.json`) ao responsável pelo projeto ou gere conforme a documentação do Google.
+   - Coloque o arquivo `keyfile.json` dentro da pasta `backend/`.
+   - **Atenção:** Tanto o `.env` quanto o `keyfile.json` são arquivos sensíveis e não devem ser enviados ao repositório. Eles já estão protegidos pelo `.gitignore`.
+
+3. **Build e start com Docker Compose:**
+   
+   docker-compose up --build
+   
+   - Frontend: http://localhost
+   - Backend: http://localhost:3001
+
 ## Estrutura
 - **Frontend:** React + Vite (porta 80)
 - **Backend:** Node.js + Express + Google Cloud Storage (porta 3001)
