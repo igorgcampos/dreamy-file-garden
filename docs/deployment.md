@@ -65,7 +65,7 @@ graph TB
 ### 2. Environment Configuration
 
 **Production Environment Variables:**
-```bash
+
 # backend/.env.production
 GCP_PROJECT=your-production-project-id
 GCP_BUCKET=your-production-bucket
@@ -73,18 +73,18 @@ GCP_KEYFILE=/app/keyfile.json
 PUBLIC_URL=https://api.yourdomain.com
 PORT=3001
 NODE_ENV=production
-```
+
 
 **Frontend Environment:**
-```bash
+
 # .env.production  
 VITE_API_URL=https://api.yourdomain.com
-```
+
 
 ### 3. Docker Production Configuration
 
 **Production docker-compose.yml:**
-```yaml
+
 version: '3.8'
 services:
   backend:
@@ -129,7 +129,7 @@ services:
 networks:
   app-network:
     driver: bridge
-```
+
 
 **Production Dockerfile.prod (Backend):**
 ```dockerfile

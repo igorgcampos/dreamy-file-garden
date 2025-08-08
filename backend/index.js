@@ -1,127 +1,140 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import multer from 'multer';
-import { Storage } from '@google-cloud/storage';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import morgan from 'morgan';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
+import passport from './config/passport.js';
+import connectDB from './config/database.js';
+import authRoutes from './routes/auth.js';
+import fileRoutes from './routes/files.js';
 
 // Config
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
-app.use(cors());
-app.use(express.json());
+
+// Connect to database
+connectDB();
+
+// Security middleware
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // limit each IP to 100 requests per windowMs in production
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const strictLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs for auth endpoints
+  message: {
+    error: 'Too many authentication attempts, please try again later.',
+    code: 'AUTH_RATE_LIMIT_EXCEEDED'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting
+app.use('/api/auth/login', strictLimiter);
+app.use('/api/auth/register', strictLimiter);
+app.use('/api', limiter);
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || ['http://localhost:8080', 'http://localhost:3000', 'http://localhost'],
+  credentials: true, // Allow cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
+
+// Initialize Passport
+app.use(passport.initialize());
 
 // HTTP request logging
-app.use(morgan('combined'));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// Multer setup (memory storage)
-const upload = multer({ storage: multer.memoryStorage() });
-
-// Google Cloud Storage setup
-const storage = new Storage({
-  keyFilename: process.env.GCP_KEYFILE,
-  projectId: process.env.GCP_PROJECT,
-});
-const bucket = storage.bucket(process.env.GCP_BUCKET);
-
-// List files
-app.get('/files', async (req, res) => {
-  console.log(`[${new Date().toISOString()}] GET /files from ${req.ip}`);
-  try {
-    const [files] = await bucket.getFiles();
-    const result = files.map(file => ({
-      id: file.name,
-      name: path.basename(file.name),
-      size: file.metadata.size,
-      type: file.metadata.contentType,
-      uploadDate: file.metadata.timeCreated,
-      url: `${process.env.PUBLIC_URL || ''}/files/${encodeURIComponent(file.name)}`
-    }));
-    res.json(result);
-    console.log(`[${new Date().toISOString()}] Listed ${result.length} files`);
-  } catch (err) {
-    console.error(`[${new Date().toISOString()}] Error listing files:`, err);
-    res.status(500).json({ error: err.message });
-  }
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Upload file
-app.post('/upload', upload.single('file'), async (req, res) => {
-  console.log(`[${new Date().toISOString()}] POST /upload from ${req.ip}, file: ${req.file?.originalname}`);
-  try {
-    const file = req.file;
-    const description = req.body.description || '';
-    if (!file) {
-      console.warn(`[${new Date().toISOString()}] No file uploaded`);
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-    const gcsFileName = `${uuidv4()}_${file.originalname}`;
-    const blob = bucket.file(gcsFileName);
-    const blobStream = blob.createWriteStream({
-      metadata: {
-        contentType: file.mimetype,
-        metadata: { description }
-      }
+// API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/files', fileRoutes);
+
+// Legacy routes for backward compatibility (redirect to new API routes)
+app.get('/files', (req, res) => {
+  res.redirect(301, '/api/files');
+});
+
+app.post('/upload', (req, res) => {
+  res.redirect(307, '/api/files/upload');
+});
+
+app.get('/files/:id', (req, res) => {
+  res.redirect(301, `/api/files/${req.params.id}/download`);
+});
+
+app.delete('/files/:id', (req, res) => {
+  res.redirect(307, `/api/files/${req.params.id}`);
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({
+      error: 'File too large',
+      code: 'FILE_TOO_LARGE'
     });
-    blobStream.end(file.buffer);
-    blobStream.on('finish', async () => {
-      res.json({
-        id: gcsFileName,
-        name: file.originalname,
-        size: file.size,
-        type: file.mimetype,
-        uploadDate: new Date(),
-        url: `${process.env.PUBLIC_URL || ''}/files/${encodeURIComponent(gcsFileName)}`,
-        description
-      });
-      console.log(`[${new Date().toISOString()}] Upload success: ${gcsFileName}`);
-    });
-    blobStream.on('error', err => {
-      console.error(`[${new Date().toISOString()}] Upload error:`, err);
-      res.status(500).json({ error: err.message });
-    });
-  } catch (err) {
-    console.error(`[${new Date().toISOString()}] Upload error:`, err);
-    res.status(500).json({ error: err.message });
   }
+  
+  res.status(500).json({
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
+    code: 'INTERNAL_ERROR'
+  });
 });
 
-// Download file
-app.get('/files/:id', async (req, res) => {
-  console.log(`[${new Date().toISOString()}] GET /files/${req.params.id} from ${req.ip}`);
-  try {
-    const file = bucket.file(req.params.id);
-    const [exists] = await file.exists();
-    if (!exists) {
-      console.warn(`[${new Date().toISOString()}] File not found: ${req.params.id}`);
-      return res.status(404).json({ error: 'File not found' });
-    }
-    res.setHeader('Content-Disposition', `attachment; filename="${path.basename(req.params.id)}"`);
-    file.createReadStream().pipe(res);
-    console.log(`[${new Date().toISOString()}] Download started: ${req.params.id}`);
-  } catch (err) {
-    console.error(`[${new Date().toISOString()}] Download error:`, err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Delete file
-app.delete('/files/:id', async (req, res) => {
-  console.log(`[${new Date().toISOString()}] DELETE /files/${req.params.id} from ${req.ip}`);
-  try {
-    const file = bucket.file(req.params.id);
-    await file.delete();
-    res.json({ success: true });
-    console.log(`[${new Date().toISOString()}] Deleted file: ${req.params.id}`);
-  } catch (err) {
-    console.error(`[${new Date().toISOString()}] Delete error:`, err);
-    res.status(500).json({ error: err.message });
-  }
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Endpoint not found',
+    code: 'NOT_FOUND'
+  });
 });
 
 app.listen(port, () => {
-  console.log(`Backend listening on port ${port}`);
+  console.log(`🚀 CloudStorage API listening on port ${port}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Health check: http://localhost:${port}/health`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`📚 Auth API: http://localhost:${port}/api/auth`);
+    console.log(`📁 Files API: http://localhost:${port}/api/files`);
+  }
 }); 

@@ -1,17 +1,31 @@
 import { useState } from 'react';
-import { Cloud, Upload as UploadIcon, Files, Search } from 'lucide-react';
+import { Cloud, Upload as UploadIcon, Files, User, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { FileUpload } from '@/components/FileUpload';
 import { FileList } from '@/components/FileList';
 import { FilePreview } from '@/components/FilePreview';
+import { AuthModal, AuthModalMode } from '@/components/auth/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
 import { useFileStorage } from '@/hooks/useFileStorage';
 import { CloudFile } from '@/types/file';
 
 const Index = () => {
+  const { user, isAuthenticated, logout } = useAuth();
   const { files, uploadProgress, uploadFile, deleteFile, downloadFile } = useFileStorage();
   const [previewFile, setPreviewFile] = useState<CloudFile | null>(null);
   const [activeTab, setActiveTab] = useState('upload');
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<AuthModalMode>('login');
 
   const handleUpload = async (file: File, description?: string) => {
     await uploadFile(file, description);
@@ -27,6 +41,20 @@ const Index = () => {
 
   const closePreview = () => {
     setPreviewFile(null);
+  };
+
+  const handleAuthClick = (mode: AuthModalMode) => {
+    setAuthModalMode(mode);
+    setAuthModalOpen(true);
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -59,6 +87,55 @@ const Index = () => {
                   }
                 </p>
               </div>
+              
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user?.avatar} />
+                        <AvatarFallback>
+                          {user ? getInitials(user.name) : 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user?.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleAuthClick('profile')}>
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout}>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => handleAuthClick('login')}
+                  >
+                    Sign In
+                  </Button>
+                  <Button 
+                    onClick={() => handleAuthClick('register')}
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -74,43 +151,76 @@ const Index = () => {
                 <Cloud className="h-12 w-12 text-white" />
               </div>
               <h2 className="text-3xl font-bold mb-4">
-                Bem-vindo ao seu Cloud Storage
+                {isAuthenticated 
+                  ? `Bem-vindo, ${user?.name}!` 
+                  : 'Bem-vindo ao CloudStorage'
+                }
               </h2>
               <p className="text-xl text-muted-foreground mb-8">
-                Faça upload, organize e acesse seus arquivos de qualquer lugar
+                {isAuthenticated 
+                  ? 'Faça upload, organize e acesse seus arquivos de qualquer lugar'
+                  : 'Entre em sua conta para começar a gerenciar seus arquivos na nuvem'
+                }
               </p>
+              {!isAuthenticated && (
+                <div className="flex justify-center space-x-4">
+                  <Button 
+                    size="lg"
+                    onClick={() => handleAuthClick('login')}
+                  >
+                    <LogIn className="mr-2 h-5 w-5" />
+                    Entrar
+                  </Button>
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    onClick={() => handleAuthClick('register')}
+                  >
+                    <User className="mr-2 h-5 w-5" />
+                    Criar Conta
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
-              <TabsTrigger value="upload" className="flex items-center space-x-2">
-                <UploadIcon className="h-4 w-4" />
-                <span>Upload</span>
-              </TabsTrigger>
-              <TabsTrigger value="files" className="flex items-center space-x-2">
-                <Files className="h-4 w-4" />
-                <span>Arquivos ({files.length})</span>
-              </TabsTrigger>
-            </TabsList>
+          {/* Show content only if authenticated */}
+          {isAuthenticated ? (
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
+                <TabsTrigger value="upload" className="flex items-center space-x-2">
+                  <UploadIcon className="h-4 w-4" />
+                  <span>Upload</span>
+                </TabsTrigger>
+                <TabsTrigger value="files" className="flex items-center space-x-2">
+                  <Files className="h-4 w-4" />
+                  <span>Arquivos ({files.length})</span>
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="upload" className="animate-fade-in">
-              <FileUpload 
-                onUpload={handleUpload}
-                uploadProgress={uploadProgress}
-              />
-            </TabsContent>
+              <TabsContent value="upload" className="animate-fade-in">
+                <FileUpload 
+                  onUpload={handleUpload}
+                  uploadProgress={uploadProgress}
+                />
+              </TabsContent>
 
-            <TabsContent value="files" className="animate-fade-in">
-              <FileList
-                files={files}
-                onDownload={downloadFile}
-                onDelete={deleteFile}
-                onPreview={handlePreview}
-              />
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="files" className="animate-fade-in">
+                <FileList
+                  files={files}
+                  onDownload={downloadFile}
+                  onDelete={deleteFile}
+                  onPreview={handlePreview}
+                />
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <div className="text-center">
+              <p className="text-muted-foreground mb-8">
+                Entre em sua conta para acessar seus arquivos
+              </p>
+            </div>
+          )}
         </div>
       </main>
 
@@ -120,6 +230,13 @@ const Index = () => {
         open={!!previewFile}
         onClose={closePreview}
         onDownload={downloadFile}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        defaultMode={authModalMode}
       />
 
       {/* Footer */}
