@@ -21,7 +21,7 @@ import { CloudFile } from '@/types/file';
 
 const Index = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { files, uploadProgress, uploadFile, deleteFile, downloadFile } = useFileStorage();
+  const { files, uploadProgress, loading, uploadFile, deleteFile, downloadFile, batchDeleteFiles, batchDownloadFiles } = useFileStorage();
   const [previewFile, setPreviewFile] = useState<CloudFile | null>(null);
   const [activeTab, setActiveTab] = useState('upload');
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -208,9 +208,12 @@ const Index = () => {
               <TabsContent value="files" className="animate-fade-in">
                 <FileList
                   files={files}
+                  loading={loading}
                   onDownload={downloadFile}
                   onDelete={deleteFile}
                   onPreview={handlePreview}
+                  onBatchDelete={batchDeleteFiles}
+                  onBatchDownload={batchDownloadFiles}
                 />
               </TabsContent>
             </Tabs>

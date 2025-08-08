@@ -71,6 +71,20 @@ export const useFileStorage = () => {
     const fileId = `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     setUploadProgress(prev => [...prev, { fileId, progress: 0, status: 'uploading' }]);
     
+    // Create optimistic file entry
+    const optimisticFile: CloudFile = {
+      id: fileId,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      uploadDate: new Date(),
+      url: '', // Will be updated when real response comes
+      description: description,
+    };
+    
+    // Add optimistic file to the list immediately
+    setFiles(prev => [optimisticFile, ...prev]);
+    
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -85,9 +99,13 @@ export const useFileStorage = () => {
         }
       });
       
-      const cloudFile = response.data;
+      const realCloudFile = response.data;
       
-      setFiles(prev => [cloudFile, ...prev]);
+      // Replace optimistic file with real data
+      setFiles(prev => prev.map(f => 
+        f.id === fileId ? realCloudFile : f
+      ));
+      
       setUploadProgress(prev => prev.map(p => 
         p.fileId === fileId ? { ...p, progress: 100, status: 'completed' } : p
       ));
@@ -101,10 +119,12 @@ export const useFileStorage = () => {
         description: `${file.name} foi enviado com sucesso!`,
       });
       
-      await fetchFiles(); // Update file list after upload
-      return cloudFile;
+      return realCloudFile;
       
     } catch (error: any) {
+      // Remove optimistic file on error
+      setFiles(prev => prev.filter(f => f.id !== fileId));
+      
       setUploadProgress(prev => prev.map(p => 
         p.fileId === fileId ? { ...p, status: 'error' } : p
       ));
@@ -119,7 +139,7 @@ export const useFileStorage = () => {
     }
   }, [isAuthenticated, fetchFiles]);
 
-  // Delete file from backend
+  // Delete file from backend with optimistic updates
   const deleteFile = useCallback(async (fileId: string) => {
     if (!isAuthenticated) {
       toast({
@@ -130,24 +150,33 @@ export const useFileStorage = () => {
       return;
     }
     
+    // Find the file to delete for rollback if needed
+    const fileToDelete = files.find(f => f.id === fileId);
+    if (!fileToDelete) return;
+    
+    // Optimistic update: remove file immediately
+    setFiles(prev => prev.filter(f => f.id !== fileId));
+    
+    // Show optimistic success toast
+    toast({
+      title: 'Arquivo deletado',
+      description: 'Arquivo removido com sucesso!',
+    });
+    
     try {
-      setLoading(true);
+      // Make API call
       await filesAPI.delete(fileId);
-      setFiles(prev => prev.filter(f => f.id !== fileId));
-      toast({
-        title: 'Arquivo deletado',
-        description: 'Arquivo removido com sucesso!',
-      });
     } catch (error: any) {
+      // Rollback on error: add file back
+      setFiles(prev => [fileToDelete, ...prev]);
+      
       toast({
         title: 'Erro ao deletar',
         description: error.response?.data?.error || 'Falha ao remover o arquivo',
         variant: 'destructive',
       });
-    } finally {
-      setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, files]);
 
   // Download file from backend
   const downloadFile = useCallback(async (file: CloudFile) => {
@@ -184,6 +213,61 @@ export const useFileStorage = () => {
     }
   }, []);
 
+  // Batch delete files with optimistic updates
+  const batchDeleteFiles = useCallback(async (fileIds: string[]) => {
+    if (!isAuthenticated || fileIds.length === 0) return;
+    
+    // Find files to delete for rollback if needed
+    const filesToDelete = files.filter(f => fileIds.includes(f.id));
+    
+    // Optimistic update: remove files immediately
+    setFiles(prev => prev.filter(f => !fileIds.includes(f.id)));
+    
+    // Show optimistic success toast
+    toast({
+      title: 'Arquivos deletados',
+      description: `${fileIds.length} arquivo(s) removido(s) com sucesso!`,
+    });
+    
+    try {
+      // Make API calls for each file (could be optimized with a batch endpoint)
+      await Promise.all(fileIds.map(id => filesAPI.delete(id)));
+    } catch (error: any) {
+      // Rollback on error: add files back
+      setFiles(prev => [...filesToDelete, ...prev]);
+      
+      toast({
+        title: 'Erro ao deletar arquivos',
+        description: error.response?.data?.error || 'Falha ao remover alguns arquivos',
+        variant: 'destructive',
+      });
+    }
+  }, [isAuthenticated, files]);
+
+  // Batch download files
+  const batchDownloadFiles = useCallback(async (filesToDownload: CloudFile[]) => {
+    try {
+      // Download each file (in a real app, you might want to create a zip)
+      for (const file of filesToDownload) {
+        await downloadFile(file);
+        // Add a small delay between downloads to avoid overwhelming the browser
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      toast({
+        title: 'Downloads iniciados',
+        description: `Iniciando download de ${filesToDownload.length} arquivo(s)...`,
+      });
+      
+    } catch (error: any) {
+      toast({
+        title: 'Erro no download em lote',
+        description: 'Falha ao baixar alguns arquivos',
+        variant: 'destructive',
+      });
+    }
+  }, [downloadFile]);
+
   return {
     files,
     uploadProgress,
@@ -191,5 +275,7 @@ export const useFileStorage = () => {
     uploadFile,
     deleteFile,
     downloadFile,
+    batchDeleteFiles,
+    batchDownloadFiles,
   };
 };
