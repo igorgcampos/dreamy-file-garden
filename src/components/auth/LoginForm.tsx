@@ -20,8 +20,8 @@ import { Separator } from '@/components/ui/separator';
 import { LoginCredentials } from '@/types/auth';
 
 const loginSchema = z.object({
-  email: z.string().email('Por favor, entre com um email valido.'),
-  password: z.string().min(1, 'Senha necessaria'),
+  email: z.string().email('Por favor, insira um email válido'),
+  password: z.string().min(1, 'Senha é obrigatória'),
 });
 
 interface LoginFormProps {
@@ -91,7 +91,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
+                placeholder="Digite sua senha"
                 {...register('password')}
                 disabled={loading}
                 autoComplete="current-password"
@@ -127,10 +127,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
+                Entrando...
               </>
             ) : (
-              'Sign In'
+              'Entrar'
             )}
           </Button>
 
@@ -140,7 +140,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
+                Ou continue com
               </span>
             </div>
           </div>

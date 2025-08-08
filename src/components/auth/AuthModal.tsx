@@ -43,13 +43,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const getTitle = () => {
     switch (mode) {
       case 'login':
-        return 'Sign In';
+        return 'Entrar';
       case 'register':
-        return 'Create Account';
+        return 'Criar Conta';
       case 'profile':
-        return 'Your Profile';
+        return 'Seu Perfil';
       default:
-        return 'Authentication';
+        return 'Autenticação';
     }
   };
 

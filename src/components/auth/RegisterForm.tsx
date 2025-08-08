@@ -20,18 +20,18 @@ import { Separator } from '@/components/ui/separator';
 import { RegisterData } from '@/types/auth';
 
 const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters long'),
-  email: z.string().email('Please enter a valid email address'),
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
+  email: z.string().email('Por favor, insira um email válido'),
   password: z
     .string()
-    .min(6, 'Password must be at least 6 characters long')
+    .min(6, 'Senha deve ter pelo menos 6 caracteres')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+      'Senha deve conter pelo menos uma letra maiúscula, uma minúscula e um número'
     ),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
+  message: 'Senhas não conferem',
   path: ['confirmPassword'],
 });
 
@@ -79,21 +79,21 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Create account</CardTitle>
+        <CardTitle className="text-2xl text-center">Criar conta</CardTitle>
         <CardDescription className="text-center">
-          Sign up for CloudStorage to start managing your files
+          Cadastre-se no CloudStorage para começar a gerenciar seus arquivos
         </CardDescription>
       </CardHeader>
       
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name">Nome Completo</Label>
             <div className="relative">
               <Input
                 id="name"
                 type="text"
-                placeholder="Enter your full name"
+                placeholder="Digite seu nome completo"
                 {...register('name')}
                 disabled={loading}
                 autoComplete="name"
@@ -111,7 +111,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Digite seu email"
               {...register('email')}
               disabled={loading}
               autoComplete="email"
@@ -122,12 +122,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Senha</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Create a password"
+                placeholder="Crie uma senha"
                 {...register('password')}
                 disabled={loading}
                 autoComplete="new-password"
@@ -154,12 +154,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm your password"
+                placeholder="Confirme sua senha"
                 {...register('confirmPassword')}
                 disabled={loading}
                 autoComplete="new-password"
@@ -195,10 +195,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating account...
+                Criando conta...
               </>
             ) : (
-              'Create Account'
+              'Criar Conta'
             )}
           </Button>
 
@@ -208,7 +208,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
+                Ou continue com
               </span>
             </div>
           </div>
@@ -217,7 +217,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
           {onSwitchToLogin && (
             <div className="text-center text-sm">
-              <span className="text-muted-foreground">Already have an account? </span>
+              <span className="text-muted-foreground">Já possui uma conta? </span>
               <Button
                 type="button"
                 variant="link"
@@ -225,7 +225,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                 onClick={onSwitchToLogin}
                 disabled={loading}
               >
-                Sign in
+                Entrar
               </Button>
             </div>
           )}
