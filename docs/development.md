@@ -1,83 +1,83 @@
-# Development Guide
+# Guia de Desenvolvimento
 
-Guide for common development workflows and patterns in the CloudStorage project.
+Guia para fluxos de trabalho e padrões de desenvolvimento comuns no projeto CloudStorage.
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 dreamy-file-garden/
-├── src/                          # Frontend source code
-│   ├── components/               # React components
-│   │   ├── FileUpload.tsx       # File upload interface
-│   │   ├── FileList.tsx         # File management interface  
-│   │   ├── FilePreview.tsx      # File preview modal
-│   │   └── ui/                  # shadcn/ui components
-│   ├── hooks/                   # Custom React hooks
-│   │   └── useFileStorage.ts    # Core file operations hook
-│   ├── lib/                     # Utility libraries
-│   │   ├── fileUtils.ts         # File helper functions
-│   │   └── utils.ts             # General utilities
-│   ├── pages/                   # Page components
-│   ├── types/                   # TypeScript type definitions
-│   └── App.tsx                  # Main application component
-├── backend/                     # Backend source code
-│   ├── index.js                 # Express server
-│   ├── package.json             # Backend dependencies
-│   └── .env                     # Environment variables
-├── docs/                        # Documentation
-└── docker-compose.yml           # Development environment
+├── src/                          # Código fonte do frontend
+│   ├── components/               # Componentes React
+│   │   ├── FileUpload.tsx       # Interface de upload de arquivos
+│   │   ├── FileList.tsx         # Interface de gerenciamento de arquivos
+│   │   ├── FilePreview.tsx      # Modal de preview de arquivos
+│   │   └── ui/                  # Componentes shadcn/ui
+│   ├── hooks/                   # React hooks customizados
+│   │   └── useFileStorage.ts    # Hook principal de operações de arquivo
+│   ├── lib/                     # Bibliotecas utilitárias
+│   │   ├── fileUtils.ts         # Funções auxiliares de arquivo
+│   │   └── utils.ts             # Utilitários gerais
+│   ├── pages/                   # Componentes de página
+│   ├── types/                   # Definições de tipos TypeScript
+│   └── App.tsx                  # Componente principal da aplicação
+├── backend/                     # Código fonte do backend
+│   ├── index.js                 # Servidor Express
+│   ├── package.json             # Dependências do backend
+│   └── .env                     # Variáveis de ambiente
+├── docs/                        # Documentação
+└── docker-compose.yml           # Ambiente de desenvolvimento
 ```
 
-## Development Workflow
+## Fluxo de Desenvolvimento
 
-### Adding New File Operations
+### Adicionando Novas Operações de Arquivo
 
-**1. Define Types** (`src/types/file.ts`)
+**1. Definir Tipos** (`src/types/file.ts`)
 ```typescript
-// Add new interface for your operation
+// Adicionar nova interface para sua operação
 export interface FileOperation {
-  // Define structure
+  // Definir estrutura
 }
 ```
 
-**2. Extend useFileStorage Hook** (`src/hooks/useFileStorage.ts`)
+**2. Estender Hook useFileStorage** (`src/hooks/useFileStorage.ts`)
 ```typescript
 export const useFileStorage = () => {
-  // Add new state if needed
+  // Adicionar novo estado se necessário
   const [newState, setNewState] = useState();
 
-  // Add new operation
+  // Adicionar nova operação
   const newOperation = useCallback(async (params) => {
     try {
-      // Implementation
+      // Implementação
       const response = await fetch(`${API_URL}/new-endpoint`, {
         method: 'POST',
         body: JSON.stringify(params)
       });
-      // Handle response
-      toast({ title: 'Success message' });
+      // Tratar resposta
+      toast({ title: 'Mensagem de sucesso' });
     } catch (error) {
       toast({ 
-        title: 'Error message',
+        title: 'Mensagem de erro',
         variant: 'destructive' 
       });
     }
   }, []);
 
   return {
-    // Existing returns...
+    // Retornos existentes...
     newOperation
   };
 };
 ```
 
-**3. Add Backend Endpoint** (`backend/index.js`)
+**3. Adicionar Endpoint do Backend** (`backend/index.js`)
 ```javascript
 app.post('/new-endpoint', async (req, res) => {
   try {
-    // Validate input
-    // Process with Google Cloud Storage
-    // Return response
+    // Validar entrada
+    // Processar com Google Cloud Storage
+    // Retornar resposta
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -85,44 +85,44 @@ app.post('/new-endpoint', async (req, res) => {
 });
 ```
 
-**4. Update Components**
+**4. Atualizar Componentes**
 ```typescript
 const { newOperation } = useFileStorage();
 
-// Use in component
+// Usar no componente
 const handleNewOperation = () => {
   newOperation(params);
 };
 ```
 
-### Adding New UI Components
+### Adicionando Novos Componentes de UI
 
-**1. Create Component File**
+**1. Criar Arquivo do Componente**
 ```typescript
 // src/components/NewComponent.tsx
 import { Component } from '@/components/ui/component';
 
 interface NewComponentProps {
-  // Define props
+  // Definir props
 }
 
 export const NewComponent = ({ ...props }: NewComponentProps) => {
   return (
     <div>
-      {/* Implementation */}
+      {/* Implementação */}
     </div>
   );
 };
 ```
 
-**2. Follow Design System Patterns**
-- Use shadcn/ui components as base
-- Apply Tailwind CSS classes
-- Include hover states and animations
-- Add proper accessibility attributes
-- Handle loading and error states
+**2. Seguir Padrões do Sistema de Design**
+- Usar componentes shadcn/ui como base
+- Aplicar classes Tailwind CSS
+- Incluir estados de hover e animações
+- Adicionar atributos de acessibilidade adequados
+- Tratar estados de carregamento e erro
 
-**3. Example Pattern**
+**3. Padrão de Exemplo**
 ```typescript
 export const FileCard = ({ file, onAction }: FileCardProps) => {
   const [loading, setLoading] = useState(false);
@@ -130,13 +130,13 @@ export const FileCard = ({ file, onAction }: FileCardProps) => {
   return (
     <Card className="hover:shadow-lg transition-all duration-300">
       <CardContent className="p-4">
-        {/* Content */}
+        {/* Conteúdo */}
         <Button 
           onClick={onAction}
           disabled={loading}
           className="w-full"
         >
-          {loading ? 'Processing...' : 'Action'}
+          {loading ? 'Processando...' : 'Ação'}
         </Button>
       </CardContent>
     </Card>
@@ -144,33 +144,33 @@ export const FileCard = ({ file, onAction }: FileCardProps) => {
 };
 ```
 
-## Key Development Patterns
+## Padrões de Desenvolvimento Principais
 
-### 1. Error Handling Pattern
+### 1. Padrão de Tratamento de Erro
 
-**Consistent Error Handling:**
+**Tratamento Consistente de Erros:**
 ```typescript
 try {
   const result = await apiOperation();
   toast({
-    title: 'Success message',
-    description: 'Detail message'
+    title: 'Mensagem de sucesso',
+    description: 'Mensagem de detalhe'
   });
   return result;
 } catch (error) {
-  console.error('Operation failed:', error);
+  console.error('Operação falhou:', error);
   toast({
-    title: 'Error message', 
+    title: 'Mensagem de erro', 
     description: (error as Error).message,
     variant: 'destructive'
   });
-  throw error; // Re-throw if needed
+  throw error; // Re-lançar se necessário
 }
 ```
 
-### 2. Loading State Pattern
+### 2. Padrão de Estado de Carregamento
 
-**Component Loading States:**
+**Estados de Carregamento de Componente:**
 ```typescript
 const [loading, setLoading] = useState(false);
 
@@ -185,150 +185,150 @@ const handleAction = async () => {
 
 return (
   <Button disabled={loading}>
-    {loading ? 'Processing...' : 'Action'}
+    {loading ? 'Processando...' : 'Ação'}
   </Button>
 );
 ```
 
-### 3. File Type Detection Pattern
+### 3. Padrão de Detecção de Tipo de Arquivo
 
-**Using fileUtils:**
+**Usando fileUtils:**
 ```typescript
 import { getFileCategory, getFileIcon, formatFileSize } from '@/lib/fileUtils';
 
 const fileCategory = getFileCategory(file.type); // 'images', 'documents', etc.
-const fileIcon = getFileIcon(file.type);         // React component
+const fileIcon = getFileIcon(file.type);         // Componente React
 const formattedSize = formatFileSize(file.size); // '2.4 MB'
 ```
 
-### 4. State Update Pattern
+### 4. Padrão de Atualização de Estado
 
-**Optimistic Updates:**
+**Atualizações Otimistas:**
 ```typescript
-// Update UI immediately
+// Atualizar UI imediatamente
 setFiles(prev => prev.filter(f => f.id !== fileId));
 
 try {
-  // Then sync with server
+  // Então sincronizar com servidor
   await deleteFile(fileId);
 } catch (error) {
-  // Rollback on failure
+  // Reverter em caso de falha
   setFiles(prev => [...prev, deletedFile]);
   throw error;
 }
 ```
 
-## Testing Patterns
+## Padrões de Teste
 
-### Manual Testing Checklist
+### Lista de Verificação de Testes Manuais
 
-**File Upload:**
-- [ ] Drag & drop works
-- [ ] File validation (size, type)
-- [ ] Progress tracking
-- [ ] Error handling
-- [ ] Multiple files
-- [ ] Upload cancellation
+**Upload de Arquivo:**
+- [ ] Arrastar e soltar funciona
+- [ ] Validação de arquivo (tamanho, tipo)
+- [ ] Acompanhamento de progresso
+- [ ] Tratamento de erros
+- [ ] Múltiplos arquivos
+- [ ] Cancelamento de upload
 
-**File Management:**
-- [ ] File listing
-- [ ] Search functionality
-- [ ] Filter by type
-- [ ] Grid/list views
-- [ ] File preview
-- [ ] Download works
-- [ ] Delete confirmation
+**Gerenciamento de Arquivos:**
+- [ ] Listagem de arquivos
+- [ ] Funcionalidade de busca
+- [ ] Filtro por tipo
+- [ ] Visualizações em grade/lista
+- [ ] Preview de arquivo
+- [ ] Download funciona
+- [ ] Confirmação de exclusão
 
-**Responsive Design:**
-- [ ] Mobile layout
-- [ ] Tablet layout
-- [ ] Desktop layout
-- [ ] Touch interactions
+**Design Responsivo:**
+- [ ] Layout mobile
+- [ ] Layout tablet
+- [ ] Layout desktop
+- [ ] Interações por toque
 
-### API Testing
+### Testes de API
 
-**Using curl:**
+**Usando curl:**
 ```bash
-# Test upload
+# Testar upload
 curl -X POST -F "file=@test.jpg" http://localhost:3001/upload
 
-# Test listing
+# Testar listagem
 curl http://localhost:3001/files
 
-# Test download
+# Testar download
 curl -O http://localhost:3001/files/file-id
 
-# Test delete
+# Testar exclusão
 curl -X DELETE http://localhost:3001/files/file-id
 ```
 
-## Code Style Guidelines
+## Diretrizes de Estilo de Código
 
-### TypeScript Guidelines
+### Diretrizes TypeScript
 
-**1. Use Explicit Types:**
+**1. Usar Tipos Explícitos:**
 ```typescript
-// Good
+// Bom
 interface FileListProps {
   files: CloudFile[];
   onDownload: (file: CloudFile) => void;
 }
 
-// Avoid
+// Evitar
 const props: any = { ... };
 ```
 
-**2. Use Proper Async/Await:**
+**2. Usar Async/Await Adequadamente:**
 ```typescript
-// Good
+// Bom
 const uploadFile = async (file: File): Promise<CloudFile> => {
   const result = await fetch(url, options);
   return await result.json();
 };
 
-// Avoid mixing promises and async/await
+// Evitar misturar promises e async/await
 ```
 
-### React Guidelines
+### Diretrizes React
 
-**1. Use Functional Components:**
+**1. Usar Componentes Funcionais:**
 ```typescript
-// Good
+// Bom
 export const FileUpload = ({ onUpload }: Props) => {
   return <div>...</div>;
 };
 
-// Avoid class components unless necessary
+// Evitar componentes de classe a menos que necessário
 ```
 
-**2. Extract Custom Hooks:**
+**2. Extrair Hooks Customizados:**
 ```typescript
-// Good - reusable logic
+// Bom - lógica reutilizável
 const useFileOperations = () => {
-  // Hook logic
+  // Lógica do hook
 };
 
-// Use in components
+// Usar em componentes
 const { upload, delete } = useFileOperations();
 ```
 
-**3. Component Organization:**
+**3. Organização de Componente:**
 ```typescript
 // 1. Imports
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-// 2. Interface definitions
+// 2. Definições de interface
 interface Props {
   // ...
 }
 
-// 3. Component implementation
+// 3. Implementação do componente
 export const Component = ({ ...props }: Props) => {
-  // 4. State
+  // 4. Estado
   const [state, setState] = useState();
 
-  // 5. Effects and handlers
+  // 5. Effects e handlers
   useEffect(() => {}, []);
   
   const handleClick = () => {};
@@ -338,38 +338,38 @@ export const Component = ({ ...props }: Props) => {
 };
 ```
 
-### CSS/Styling Guidelines
+### Diretrizes de CSS/Estilização
 
-**1. Use Tailwind Classes:**
+**1. Usar Classes Tailwind:**
 ```typescript
-// Good
+// Bom
 <div className="flex items-center space-x-4 p-6 bg-card rounded-lg">
 
-// Avoid custom CSS unless necessary
+// Evitar CSS customizado a menos que necessário
 ```
 
-**2. Responsive Design:**
+**2. Design Responsivo:**
 ```typescript
 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 ```
 
-**3. Animation Classes:**
+**3. Classes de Animação:**
 ```typescript
 <div className="transition-all duration-300 hover:scale-105">
 ```
 
-## Common Issues and Solutions
+## Problemas Comuns e Soluções
 
-### 1. CORS Issues
-**Problem**: Frontend can't access backend
-**Solution**: Verify CORS configuration in backend:
+### 1. Problemas de CORS
+**Problema**: Frontend não consegue acessar backend
+**Solução**: Verificar configuração CORS no backend:
 ```javascript
-app.use(cors()); // Allow all origins in development
+app.use(cors()); // Permitir todas as origens em desenvolvimento
 ```
 
-### 2. File Upload Failures
-**Problem**: Large files fail to upload
-**Solution**: Check multer limits and GCS permissions:
+### 2. Falhas no Upload de Arquivo
+**Problema**: Arquivos grandes falham ao fazer upload
+**Solução**: Verificar limites do multer e permissões do GCS:
 ```javascript
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -377,20 +377,20 @@ const upload = multer({
 });
 ```
 
-### 3. Environment Variables Not Loading
-**Problem**: Backend can't find GCS credentials
-**Solution**: Verify `.env` file location and variable names:
+### 3. Variáveis de Ambiente Não Carregando
+**Problema**: Backend não encontra credenciais do GCS
+**Solução**: Verificar localização do arquivo `.env` e nomes das variáveis:
 ```bash
-# Check file exists
+# Verificar se arquivo existe
 ls -la backend/.env
 
-# Verify variables are loaded
+# Verificar se variáveis estão carregadas
 node -e "console.log(process.env.GCP_PROJECT)"
 ```
 
-### 4. TypeScript Errors
-**Problem**: Build fails with TypeScript errors
-**Solution**: The project uses relaxed TypeScript config. Check `tsconfig.json`:
+### 4. Erros TypeScript
+**Problema**: Build falha com erros TypeScript
+**Solução**: O projeto usa configuração TypeScript relaxada. Verificar `tsconfig.json`:
 ```json
 {
   "compilerOptions": {
@@ -400,66 +400,66 @@ node -e "console.log(process.env.GCP_PROJECT)"
 }
 ```
 
-## Debugging
+## Depuração
 
-### Frontend Debugging
+### Depuração do Frontend
 ```typescript
-// Add debugging to useFileStorage hook
+// Adicionar depuração ao hook useFileStorage
 const uploadFile = async (file: File) => {
-  console.log('Uploading file:', file.name, file.size);
+  console.log('Fazendo upload do arquivo:', file.name, file.size);
   
   try {
     const result = await fetch(url, options);
-    console.log('Upload response:', result.status);
+    console.log('Resposta do upload:', result.status);
     return result.json();
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Erro no upload:', error);
     throw error;
   }
 };
 ```
 
-### Backend Debugging
+### Depuração do Backend
 ```javascript
-// Morgan logging is enabled by default
+// Logging Morgan está habilitado por padrão
 app.use(morgan('combined'));
 
-// Add custom logging
+// Adicionar logging customizado
 app.post('/upload', (req, res) => {
-  console.log('Upload request:', req.file?.originalname);
-  // ... rest of handler
+  console.log('Requisição de upload:', req.file?.originalname);
+  // ... resto do handler
 });
 ```
 
-### GCS Debugging
+### Depuração do GCS
 ```javascript
-// Test GCS connection
+// Testar conexão GCS
 const testGCS = async () => {
   try {
     const [files] = await bucket.getFiles();
-    console.log(`Found ${files.length} files`);
+    console.log(`Encontrados ${files.length} arquivos`);
   } catch (error) {
-    console.error('GCS error:', error.message);
+    console.error('Erro GCS:', error.message);
   }
 };
 ```
 
-## Performance Considerations
+## Considerações de Performance
 
-### Frontend Optimization
-- Use React.memo for expensive components
-- Implement virtual scrolling for large file lists
-- Optimize images with proper formats and sizes
-- Use lazy loading for file previews
+### Otimização do Frontend
+- Usar React.memo para componentes custosos
+- Implementar scroll virtual para listas grandes de arquivos
+- Otimizar imagens com formatos e tamanhos adequados
+- Usar lazy loading para previews de arquivo
 
-### Backend Optimization  
-- Stream large files instead of loading into memory
-- Add response caching for file metadata
-- Implement request rate limiting
-- Use compression middleware
+### Otimização do Backend
+- Fazer stream de arquivos grandes ao invés de carregar na memória
+- Adicionar cache de resposta para metadados de arquivo
+- Implementar rate limiting de requisições
+- Usar middleware de compressão
 
-### Network Optimization
-- Enable gzip compression
-- Use CDN for file delivery
-- Implement progressive file loading
-- Add retry logic for failed requests
+### Otimização de Rede
+- Habilitar compressão gzip
+- Usar CDN para entrega de arquivos
+- Implementar carregamento progressivo de arquivos
+- Adicionar lógica de retry para requisições falhadas

@@ -1,139 +1,139 @@
-# ADR-001: Architecture Documentation Framework
+# ADR-001: Framework de Documentação da Arquitetura
 
 **Status**: Accepted  
-**Date**: 2024-01-15  
-**Deciders**: Development Team  
+**Data**: 2024-01-15  
+**Decisores**: Equipe de Desenvolvimento  
 
-## Context
+## Contexto
 
-The CloudStorage project needs comprehensive architecture documentation to support:
-- New developer onboarding
-- System understanding and maintenance
-- Deployment and operational knowledge
-- Future architectural decisions
+O projeto CloudStorage precisa de documentação abrangente da arquitetura para apoiar:
+- Integração de novos desenvolvedores
+- Compreensão e manutenção do sistema
+- Conhecimento operacional e de deploy
+- Futuras decisões arquiteturais
 
-We needed to choose an appropriate documentation framework that balances comprehensiveness with maintainability for a medium-complexity application.
+Precisávamos escolher um framework de documentação apropriado que equilibrasse abrangência com manutenibilidade para uma aplicação de complexidade média.
 
-## Decision
+## Decisão
 
-We will use a **simplified, practical documentation approach** focused on high-impact documentation rather than enterprise-level frameworks.
+Utilizaremos uma **abordagem de documentação simplificada e prática** focada em documentação de alto impacto ao invés de frameworks de nível empresarial.
 
-### Chosen Framework Components:
+### Componentes do Framework Escolhido:
 
-1. **Markdown-based documentation** in `/docs` directory
-2. **Mermaid diagrams** for visual architecture representation  
-3. **API-first documentation** with practical examples
-4. **Workflow-focused guides** for common development tasks
-5. **Minimal ADR process** for significant architectural changes only
+1. **Documentação baseada em Markdown** no diretório `/docs`
+2. **Diagramas Mermaid** para representação visual da arquitetura  
+3. **Documentação API-first** com exemplos práticos
+4. **Guias focados em workflow** para tarefas comuns de desenvolvimento
+5. **Processo ADR mínimo** apenas para mudanças arquiteturais significativas
 
-### Documentation Structure:
+### Estrutura da Documentação:
 ```
 docs/
-├── README.md          # Documentation overview and navigation
-├── setup-guide.md     # Environment setup and GCS configuration  
-├── development.md     # Development workflows and patterns
-├── architecture.md    # System architecture and component relationships
-├── api.md            # REST API reference with examples
-├── deployment.md     # Production deployment guide
-└── adrs/             # Architecture Decision Records (minimal)
+├── README.md          # Visão geral da documentação e navegação
+├── setup-guide.md     # Configuração do ambiente e GCS  
+├── development.md     # Workflows de desenvolvimento e padrões
+├── architecture.md    # Arquitetura do sistema e relacionamentos de componentes
+├── api.md            # Referência da API REST com exemplos
+├── deployment.md     # Guia de deploy em produção
+└── adrs/             # Architecture Decision Records (mínimo)
 ```
 
-## Alternatives Considered
+## Alternativas Consideradas
 
-### 1. Full C4 Model Documentation
-- **Pros**: Comprehensive, standardized approach
-- **Cons**: Overly complex for current project size, high maintenance overhead
-- **Decision**: Rejected - too heavy for a ~2000 LOC application
+### 1. Documentação Completa do Modelo C4
+- **Prós**: Abordagem abrangente e padronizada
+- **Contras**: Excessivamente complexa para o tamanho atual do projeto, alta sobrecarga de manutenção
+- **Decisão**: Rejeitada - muito pesada para uma aplicação de ~2000 LOC
 
-### 2. Arc42 Template  
-- **Pros**: Well-structured, comprehensive architecture template
-- **Cons**: Enterprise-focused, would require significant overhead
-- **Decision**: Rejected - inappropriate for project scale
+### 2. Template Arc42  
+- **Prós**: Bem estruturado, template de arquitetura abrangente
+- **Contras**: Focado em empresas, exigiria sobrecarga significativa
+- **Decisão**: Rejeitada - inadequada para a escala do projeto
 
-### 3. Wiki-based Documentation
-- **Pros**: Easy collaboration, searchable
-- **Cons**: Not version-controlled with code, potential for staleness
-- **Decision**: Rejected - prefer documentation living with code
+### 3. Documentação Baseada em Wiki
+- **Prós**: Colaboração fácil, pesquisável
+- **Contras**: Não versionada com código, potencial para desatualização
+- **Decisão**: Rejeitada - preferimos documentação junto com o código
 
-### 4. Auto-generated Documentation Only
-- **Pros**: Always current, low maintenance
-- **Cons**: Lacks architectural context and decision rationale
-- **Decision**: Rejected - insufficient for architectural understanding
+### 4. Apenas Documentação Auto-gerada
+- **Prós**: Sempre atual, baixa manutenção
+- **Contras**: Carece de contexto arquitetural e justificativa de decisões
+- **Decisão**: Rejeitada - insuficiente para compreensão arquitetural
 
-## Rationale
+## Justificativa
 
-### Why This Approach Works:
+### Por que Esta Abordagem Funciona:
 
-1. **Right-sized for Project**: Matches the complexity of a medium-scale application
-2. **Developer-focused**: Prioritizes information developers actually need
-3. **Maintainable**: Simple markdown files are easy to keep current
-4. **Version-controlled**: Documentation evolves with code
-5. **Practical Examples**: Focus on working code examples and commands
+1. **Dimensionada Corretamente para o Projeto**: Combina com a complexidade de uma aplicação de escala média
+2. **Focada no Desenvolvedor**: Prioriza informações que desenvolvedores realmente precisam
+3. **Manutenível**: Arquivos markdown simples são fáceis de manter atualizados
+4. **Versionada**: Documentação evolui com o código
+5. **Exemplos Práticos**: Foco em exemplos de código funcionais e comandos
 
-### Key Principles Applied:
+### Princípios Chave Aplicados:
 
-- **High-impact Documentation**: Focus on non-obvious aspects (GCS setup, useFileStorage patterns)
-- **Practical Over Perfect**: Working examples over theoretical completeness  
-- **Maintenance Burden**: Keep documentation simple enough to stay current
-- **Developer Experience**: Optimize for new developer productivity
+- **Documentação de Alto Impacto**: Foco em aspectos não óbvios (configuração GCS, padrões useFileStorage)
+- **Prático Sobre Perfeito**: Exemplos funcionais sobre completude teórica  
+- **Carga de Manutenção**: Manter documentação simples o suficiente para permanecer atual
+- **Experiência do Desenvolvedor**: Otimizar para produtividade de novos desenvolvedores
 
-## Consequences
+## Consequências
 
-### Positive:
-- ✅ Fast developer onboarding with setup guide
-- ✅ Clear API reference with working examples
-- ✅ Architectural understanding without over-documentation
-- ✅ Low maintenance overhead
-- ✅ Documentation stays current with development
+### Positivas:
+- ✅ Integração rápida de desenvolvedores com guia de configuração
+- ✅ Referência clara da API com exemplos funcionais
+- ✅ Compreensão arquitetural sem excesso de documentação
+- ✅ Baixa sobrecarga de manutenção
+- ✅ Documentação permanece atual com desenvolvimento
 
-### Negative:
-- ❌ Less comprehensive than enterprise frameworks
-- ❌ Manual maintenance required (no auto-generation)
-- ❌ May need evolution if project grows significantly
-- ❌ Limited formal decision tracking (minimal ADR process)
+### Negativas:
+- ❌ Menos abrangente que frameworks empresariais
+- ❌ Manutenção manual necessária (sem auto-geração)
+- ❌ Pode precisar de evolução se projeto crescer significativamente
+- ❌ Rastreamento formal limitado de decisões (processo ADR mínimo)
 
-### Neutral:
-- 🔄 Will need periodic review and updates
-- 🔄 May require framework evolution as team/project grows
-- 🔄 Balance between completeness and maintainability
+### Neutras:
+- 🔄 Precisará de revisão e atualizações periódicas
+- 🔄 Pode requerer evolução do framework conforme equipe/projeto crescem
+- 🔄 Equilíbrio entre completude e manutenibilidade
 
-## Implementation Plan
+## Plano de Implementação
 
-### Phase 1 (Immediate):
-- [x] Create essential documentation files
-- [x] Document GCS setup process  
-- [x] Create API reference with examples
-- [x] Document development workflows
+### Fase 1 (Imediato):
+- [x] Criar arquivos essenciais de documentação
+- [x] Documentar processo de configuração GCS  
+- [x] Criar referência da API com exemplos
+- [x] Documentar workflows de desenvolvimento
 
-### Phase 2 (Future):
-- [ ] Add troubleshooting guides based on common issues
-- [ ] Expand deployment documentation with production examples
-- [ ] Create automated documentation validation
-- [ ] Add documentation review process to development workflow
+### Fase 2 (Futuro):
+- [ ] Adicionar guias de solução de problemas baseados em issues comuns
+- [ ] Expandir documentação de deploy com exemplos de produção
+- [ ] Criar validação automatizada de documentação
+- [ ] Adicionar processo de revisão de documentação ao workflow de desenvolvimento
 
-## Monitoring and Review
+## Monitoramento e Revisão
 
-### Success Metrics:
-- New developer time-to-productivity (target: < 1 hour setup)
-- Documentation usage patterns (most accessed pages)
-- Developer feedback on documentation usefulness
-- Documentation staleness (last update timestamps)
+### Métricas de Sucesso:
+- Tempo para produtividade de novo desenvolvedor (meta: < 1 hora de configuração)
+- Padrões de uso da documentação (páginas mais acessadas)
+- Feedback de desenvolvedores sobre utilidade da documentação
+- Desatualização da documentação (timestamps da última atualização)
 
-### Review Schedule:
-- **Monthly**: Check for outdated information
-- **Quarterly**: Evaluate documentation completeness
-- **Semi-annually**: Consider framework evolution needs
+### Cronograma de Revisão:
+- **Mensal**: Verificar informações desatualizadas
+- **Trimestral**: Avaliar completude da documentação
+- **Semestral**: Considerar necessidades de evolução do framework
 
-### Triggers for Framework Change:
-- Project grows beyond ~5000 LOC
-- Team grows beyond 5 developers  
-- Multiple service architecture emerges
-- Compliance requirements increase
-- Documentation maintenance becomes significant burden
+### Gatilhos para Mudança de Framework:
+- Projeto crescer além de ~5000 LOC
+- Equipe crescer além de 5 desenvolvedores  
+- Emergir arquitetura de múltiplos serviços
+- Requisitos de compliance aumentarem
+- Manutenção de documentação se tornar carga significativa
 
-## References
+## Referências
 
-- [C4 Model](https://c4model.com/) - Considered but rejected for current scale
-- [Arc42](https://arc42.org/) - Enterprise architecture template  
-- [Architectural Decision Records](https://adr.github.io/) - Lightweight decision tracking
-- [Docs as Code](https://www.writethedocs.org/guide/docs-as-code/) - Documentation philosophy
+- [Modelo C4](https://c4model.com/) - Considerado mas rejeitado para escala atual
+- [Arc42](https://arc42.org/) - Template de arquitetura empresarial  
+- [Architectural Decision Records](https://adr.github.io/) - Rastreamento leve de decisões
+- [Docs as Code](https://www.writethedocs.org/guide/docs-as-code/) - Filosofia de documentação

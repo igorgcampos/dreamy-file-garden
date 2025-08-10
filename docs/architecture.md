@@ -1,22 +1,22 @@
-# Architecture Overview
+# Visão Geral da Arquitetura
 
-CloudStorage system architecture and component relationships.
+Arquitetura do sistema CloudStorage e relações entre componentes.
 
-## System Overview
+## Visão Geral do Sistema
 
-CloudStorage is a modern web application for file management with cloud storage, built using a clean 3-tier architecture:
+CloudStorage é uma aplicação web moderna para gerenciamento de arquivos com armazenamento em nuvem, construída usando uma arquitetura limpa de 3 camadas:
 
 ```mermaid
 graph TB
-    subgraph "Client Tier"
+    subgraph "Camada Cliente"
         UI[React Frontend]
     end
     
-    subgraph "Application Tier"  
+    subgraph "Camada Aplicação"  
         API[Express Backend]
     end
     
-    subgraph "Storage Tier"
+    subgraph "Camada Armazenamento"
         GCS[Google Cloud Storage]
     end
     
@@ -24,30 +24,30 @@ graph TB
     API --> GCS
 ```
 
-## High-Level Architecture
+## Arquitetura de Alto Nível
 
 ### Frontend (React SPA)
-- **Technology**: React 18 + TypeScript + Vite
-- **UI Framework**: shadcn/ui + Tailwind CSS
-- **State Management**: React Query + Custom Hooks
-- **Routing**: React Router
-- **Build Tool**: Vite with SWC
+- **Tecnologia**: React 18 + TypeScript + Vite
+- **Framework UI**: shadcn/ui + Tailwind CSS
+- **Gerenciamento de Estado**: React Query + Custom Hooks
+- **Roteamento**: React Router
+- **Ferramenta de Build**: Vite with SWC
 
 ### Backend (REST API)
-- **Technology**: Node.js + Express
-- **Cloud Integration**: Google Cloud Storage SDK
-- **File Processing**: Multer (memory storage)
+- **Tecnologia**: Node.js + Express
+- **Integração Cloud**: Google Cloud Storage SDK
+- **Processamento de Arquivos**: Multer (memory storage)
 - **Logging**: Morgan
-- **Security**: CORS enabled
+- **Segurança**: CORS habilitado
 
 ### Deployment
-- **Containerization**: Docker + Docker Compose  
-- **Web Server**: nginx (frontend proxy)
-- **Networking**: Internal Docker bridge network
+- **Containerização**: Docker + Docker Compose  
+- **Servidor Web**: nginx (proxy frontend)
+- **Rede**: Rede bridge interna do Docker
 
-## Component Architecture
+## Arquitetura de Componentes
 
-### Frontend Components
+### Componentes Frontend
 
 ```mermaid
 graph TD
@@ -69,43 +69,43 @@ graph TD
     I[Toast System] --> F
 ```
 
-#### Key Frontend Components
+#### Componentes Frontend Principais
 
 **1. useFileStorage Hook** (`src/hooks/useFileStorage.ts`)
-- **Purpose**: Central state management for all file operations
-- **Responsibilities**:
-  - File listing and caching
-  - Upload with progress tracking
-  - Download and delete operations
-  - Error handling and toast notifications
-  - Backend synchronization
+- **Propósito**: Gerenciamento central de estado para todas as operações de arquivo
+- **Responsabilidades**:
+  - Listagem e cache de arquivos
+  - Upload com rastreamento de progresso
+  - Operações de download e exclusão
+  - Tratamento de erros e notificações toast
+  - Sincronização com backend
 
 **2. FileUpload Component** (`src/components/FileUpload.tsx`)
-- **Purpose**: Drag & drop file upload interface
-- **Features**:
-  - Multiple file selection
-  - File validation (size, type)
-  - Upload progress display
-  - File description input
-  - Visual feedback (animations)
+- **Propósito**: Interface de upload de arquivos com drag & drop
+- **Funcionalidades**:
+  - Seleção múltipla de arquivos
+  - Validação de arquivos (tamanho, tipo)
+  - Exibição de progresso de upload
+  - Input de descrição do arquivo
+  - Feedback visual (animações)
 
 **3. FileList Component** (`src/components/FileList.tsx`)
-- **Purpose**: File browsing and management
-- **Features**:
-  - Grid/list view modes
-  - Search and filtering
-  - File categorization
-  - Bulk operations
-  - Preview, download, delete actions
+- **Propósito**: Navegação e gerenciamento de arquivos
+- **Funcionalidades**:
+  - Modos de visualização em grade/lista
+  - Busca e filtragem
+  - Categorização de arquivos
+  - Operações em lote
+  - Ações de preview, download e exclusão
 
 **4. FilePreview Component** (`src/components/FilePreview.tsx`)
-- **Purpose**: File preview modal
-- **Features**:
-  - Image preview
-  - File metadata display
-  - Download/delete actions
+- **Propósito**: Modal de preview de arquivos
+- **Funcionalidades**:
+  - Preview de imagens
+  - Exibição de metadados do arquivo
+  - Ações de download/exclusão
 
-### Backend Architecture
+### Arquitetura Backend
 
 ```mermaid
 graph TD
@@ -127,53 +127,53 @@ graph TD
     J --> K
 ```
 
-#### Backend Components
+#### Componentes Backend
 
 **1. Express Server** (`backend/index.js`)
-- **Purpose**: REST API server
-- **Middleware Stack**:
-  - CORS (cross-origin requests)
-  - Morgan (request logging)
+- **Propósito**: Servidor REST API
+- **Stack de Middleware**:
+  - CORS (requisições cross-origin)
+  - Morgan (logging de requisições)
   - Express JSON parser
-  - Multer (file upload handling)
+  - Multer (tratamento de upload de arquivos)
 
-**2. Google Cloud Storage Integration**
+**2. Integração Google Cloud Storage**
 - **SDK**: `@google-cloud/storage`
-- **Authentication**: Service account key file
-- **Operations**: List, upload, download, delete
-- **File Naming**: UUID-prefixed to prevent conflicts
+- **Autenticação**: Arquivo de chave da conta de serviço
+- **Operações**: Listar, upload, download, exclusão
+- **Nomenclatura de Arquivos**: Prefixados com UUID para evitar conflitos
 
-## Data Flow
+## Fluxo de Dados
 
-### File Upload Flow
+### Fluxo de Upload de Arquivos
 
 ```mermaid
 sequenceDiagram
-    participant U as User
+    participant U as Usuário
     participant FC as FileUpload Component
     participant H as useFileStorage Hook
     participant API as Express Backend
     participant GCS as Google Cloud Storage
     
-    U->>FC: Select/Drop Files
-    FC->>FC: File Validation
+    U->>FC: Selecionar/Arrastar Arquivos
+    FC->>FC: Validação de Arquivos
     FC->>H: uploadFile()
-    H->>H: Create Progress Tracker
+    H->>H: Criar Rastreador de Progresso
     H->>API: POST /upload (FormData)
-    API->>API: Multer Processing
-    API->>GCS: Upload to Bucket
-    GCS-->>API: Upload Success
-    API-->>H: File Metadata
-    H->>H: Update File List
-    H->>H: Show Success Toast
-    H-->>FC: Upload Complete
+    API->>API: Processamento Multer
+    API->>GCS: Upload para Bucket
+    GCS-->>API: Sucesso no Upload
+    API-->>H: Metadados do Arquivo
+    H->>H: Atualizar Lista de Arquivos
+    H->>H: Mostrar Toast de Sucesso
+    H-->>FC: Upload Completo
 ```
 
-### File List/Download Flow
+### Fluxo de Listagem/Download de Arquivos
 
 ```mermaid
 sequenceDiagram
-    participant U as User
+    participant U as Usuário
     participant FL as FileList Component
     participant H as useFileStorage Hook
     participant API as Express Backend
@@ -181,101 +181,101 @@ sequenceDiagram
     
     FL->>H: fetchFiles()
     H->>API: GET /files
-    API->>GCS: List Bucket Files
-    GCS-->>API: File Metadata
-    API-->>H: File Array
-    H->>H: Cache Files
-    H-->>FL: Display Files
+    API->>GCS: Listar Arquivos do Bucket
+    GCS-->>API: Metadados dos Arquivos
+    API-->>H: Array de Arquivos
+    H->>H: Cache de Arquivos
+    H-->>FL: Exibir Arquivos
     
-    U->>FL: Click Download
+    U->>FL: Clicar Download
     FL->>H: downloadFile()
-    H->>H: Create Download Link
+    H->>H: Criar Link de Download
     H->>API: GET /files/:id
-    API->>GCS: Stream File
-    GCS-->>API: File Data
-    API-->>H: File Stream
+    API->>GCS: Stream do Arquivo
+    GCS-->>API: Dados do Arquivo
+    API-->>H: Stream do Arquivo
 ```
 
-## Key Architectural Patterns
+## Padrões Arquiteturais Principais
 
-### 1. Custom Hook Pattern
-- **Implementation**: `useFileStorage` hook encapsulates all file operations
-- **Benefits**: Centralized state, reusable logic, consistent error handling
-- **Usage**: Shared across multiple components
+### 1. Padrão Custom Hook
+- **Implementação**: Hook `useFileStorage` encapsula todas as operações de arquivo
+- **Benefícios**: Estado centralizado, lógica reutilizável, tratamento consistente de erros
+- **Uso**: Compartilhado entre múltiplos componentes
 
-### 2. Component Composition
-- **Implementation**: shadcn/ui components composed into complex interfaces  
-- **Benefits**: Consistent design, reusable elements, maintainable code
-- **Example**: FileUpload uses Card, Button, Progress, Toast components
+### 2. Composição de Componentes
+- **Implementação**: Componentes shadcn/ui compostos em interfaces complexas  
+- **Benefícios**: Design consistente, elementos reutilizáveis, código manutenível
+- **Exemplo**: FileUpload usa componentes Card, Button, Progress, Toast
 
-### 3. Separation of Concerns
-- **Frontend**: UI/UX and state management only
-- **Backend**: Business logic and cloud integration
-- **Storage**: File persistence and retrieval
+### 3. Separação de Responsabilidades
+- **Frontend**: Apenas UI/UX e gerenciamento de estado
+- **Backend**: Lógica de negócio e integração com nuvem
+- **Armazenamento**: Persistência e recuperação de arquivos
 
-### 4. Error Boundaries
-- **Implementation**: Consistent error handling via toast notifications
-- **Strategy**: Fail gracefully, inform users, log for debugging
-- **Coverage**: Upload failures, network errors, GCS errors
+### 4. Boundaries de Erro
+- **Implementação**: Tratamento consistente de erros via notificações toast
+- **Estratégia**: Falha graciosamente, informar usuários, log para debug
+- **Cobertura**: Falhas de upload, erros de rede, erros GCS
 
-### 5. Progressive Enhancement  
-- **Implementation**: Core functionality works without JavaScript
-- **Features**: Responsive design, accessible components
-- **Fallbacks**: Loading states, error states, empty states
+### 5. Aprimoramento Progressivo  
+- **Implementação**: Funcionalidade principal funciona sem JavaScript
+- **Funcionalidades**: Design responsivo, componentes acessíveis
+- **Fallbacks**: Estados de loading, erro e vazio
 
-## Security Architecture
+## Arquitetura de Segurança
 
-### Frontend Security
-- **Input Validation**: File type and size validation
-- **XSS Prevention**: React's built-in sanitization
-- **HTTPS**: Required for production deployment
+### Segurança Frontend
+- **Validação de Input**: Validação de tipo e tamanho de arquivo
+- **Prevenção XSS**: Sanitização integrada do React
+- **HTTPS**: Obrigatório para deployment em produção
 
-### Backend Security  
-- **File Validation**: Multer file size limits (500MB)
-- **CORS**: Configured for allowed origins
-- **Input Sanitization**: Express built-in protections
-- **Error Handling**: No sensitive data in error responses
+### Segurança Backend  
+- **Validação de Arquivos**: Limites de tamanho de arquivo Multer (500MB)
+- **CORS**: Configurado para origens permitidas
+- **Sanitização de Input**: Proteções integradas do Express
+- **Tratamento de Erros**: Nenhum dado sensível em respostas de erro
 
-### Cloud Security
-- **Authentication**: Service account with minimal permissions
-- **Access Control**: Fine-grained IAM roles
-- **Network Security**: Private bucket access only through API
-- **Encryption**: GCS handles encryption at rest
+### Segurança Cloud
+- **Autenticação**: Conta de serviço com permissões mínimas
+- **Controle de Acesso**: Papéis IAM granulares
+- **Segurança de Rede**: Acesso privado ao bucket apenas através da API
+- **Criptografia**: GCS trata criptografia em repouso
 
-## Scalability Considerations
+## Considerações de Escalabilidade
 
-### Current Architecture Limits
-- **Single Backend Instance**: No load balancing
-- **Memory Storage**: Multer uses memory for file processing
-- **No Caching**: Files fetched from GCS on every request
-- **No CDN**: Direct GCS access for downloads
+### Limitações da Arquitetura Atual
+- **Instância Backend Única**: Sem balanceamento de carga
+- **Armazenamento em Memória**: Multer usa memória para processamento de arquivos
+- **Sem Cache**: Arquivos buscados do GCS a cada requisição
+- **Sem CDN**: Acesso direto ao GCS para downloads
 
-### Future Scaling Opportunities
-- **Horizontal Scaling**: Multiple backend instances with load balancer
-- **Caching Layer**: Redis for file metadata caching  
-- **CDN Integration**: Cloud CDN for file delivery
-- **Database**: Add metadata database for complex queries
-- **Authentication**: Add user management and authorization
-- **File Processing**: Add image resizing, virus scanning
+### Oportunidades Futuras de Escala
+- **Escalonamento Horizontal**: Múltiplas instâncias backend com balanceador de carga
+- **Camada de Cache**: Redis para cache de metadados de arquivos  
+- **Integração CDN**: Cloud CDN para entrega de arquivos
+- **Banco de Dados**: Adicionar banco de metadados para consultas complexas
+- **Autenticação**: Adicionar gerenciamento de usuários e autorização
+- **Processamento de Arquivos**: Adicionar redimensionamento de imagens, scanning de vírus
 
-## Technology Decisions
+## Decisões Tecnológicas
 
-### Frontend Framework: React + TypeScript
-- **Why**: Strong ecosystem, TypeScript safety, component reusability
-- **Alternatives**: Vue.js, Angular, Svelte
-- **Trade-offs**: Bundle size vs. developer experience
+### Framework Frontend: React + TypeScript
+- **Por que**: Ecossistema forte, segurança do TypeScript, reutilização de componentes
+- **Alternativas**: Vue.js, Angular, Svelte
+- **Trade-offs**: Tamanho do bundle vs. experiência do desenvolvedor
 
-### UI Library: shadcn/ui + Tailwind
-- **Why**: Modern components, customizable, good accessibility
-- **Alternatives**: Material-UI, Ant Design, Chakra UI
-- **Trade-offs**: Learning curve vs. flexibility
+### Biblioteca UI: shadcn/ui + Tailwind
+- **Por que**: Componentes modernos, customizáveis, boa acessibilidade
+- **Alternativas**: Material-UI, Ant Design, Chakra UI
+- **Trade-offs**: Curva de aprendizado vs. flexibilidade
 
 ### Backend: Node.js + Express  
-- **Why**: JavaScript consistency, simple REST API, good GCS SDK
-- **Alternatives**: Python (FastAPI), Go, Java (Spring Boot)
-- **Trade-offs**: Performance vs. development speed
+- **Por que**: Consistência JavaScript, API REST simples, bom SDK GCS
+- **Alternativas**: Python (FastAPI), Go, Java (Spring Boot)
+- **Trade-offs**: Performance vs. velocidade de desenvolvimento
 
-### Storage: Google Cloud Storage
-- **Why**: Scalable, reliable, good SDK, cost-effective
-- **Alternatives**: AWS S3, Azure Blob Storage, MinIO
-- **Trade-offs**: Vendor lock-in vs. features
+### Armazenamento: Google Cloud Storage
+- **Por que**: Escalável, confiável, bom SDK, custo-efetivo
+- **Alternativas**: AWS S3, Azure Blob Storage, MinIO
+- **Trade-offs**: Vendor lock-in vs. funcionalidades

@@ -42,13 +42,13 @@ graph LR
 
 ### Key Components
 
-| Component | Technology | Purpose |
+| Componente | Tecnologia | Propósito |
 |-----------|------------|---------|
-| **Frontend** | React 18 + TypeScript + Vite | User interface and file management |
-| **Backend** | Node.js + Express | REST API and business logic |
-| **Storage** | Google Cloud Storage | File persistence and retrieval |
-| **UI Framework** | shadcn/ui + Tailwind CSS | Design system and styling |
-| **Deployment** | Docker + nginx | Containerized deployment |
+| **Frontend** | React 18 + TypeScript + Vite | Interface do usuário e gerenciamento de arquivos |
+| **Backend** | Node.js + Express | API REST e lógica de negócio |
+| **Storage** | Google Cloud Storage | Persistência e recuperação de arquivos |
+| **Framework UI** | shadcn/ui + Tailwind CSS | Sistema de design e estilização |
+| **Deploy** | Docker + nginx | Deploy containerizado |
 
 ### Core Features
 
@@ -80,100 +80,100 @@ graph LR
 2. Update [CLAUDE.md](../CLAUDE.md) for AI assistant guidance
 3. Maintain [Development Guide](./development.md) patterns
 
-## 🛠️ Development Workflow
+## 🛠️ Fluxo de Desenvolvimento
 
 ```mermaid
 graph TD
-    A[Clone Repository] --> B[Setup Environment]
-    B --> C[Configure GCS]
-    C --> D[Install Dependencies]
-    D --> E[Start Development]
+    A[Clonar Repositório] --> B[Configurar Ambiente]
+    B --> C[Configurar GCS]
+    C --> D[Instalar Dependências]
+    D --> E[Iniciar Desenvolvimento]
     
-    E --> F[Write Code]
-    F --> G[Test Locally]
+    E --> F[Escrever Código]
+    F --> G[Testar Localmente]
     G --> H[Build & Deploy]
     
-    H --> I[Production]
+    H --> I[Produção]
 ```
 
-**Quick Development Commands:**
+**Comandos Rápidos de Desenvolvimento:**
 ```bash
-# Start development environment
+# Iniciar ambiente de desenvolvimento
 docker-compose up --build
 
-# Or run separately
-npm run dev        # Frontend (port 8080)  
-cd backend && npm start  # Backend (port 3001)
+# Ou executar separadamente
+npm run dev        # Frontend (porta 8080)  
+cd backend && npm start  # Backend (porta 3001)
 
-# Build for production
+# Build para produção
 npm run build      # Frontend
-npm run lint       # Check code quality
+npm run lint       # Verificar qualidade do código
 ```
 
-## 🔗 External Resources
+## 🔗 Recursos Externos
 
 ### Google Cloud Storage
-- [GCS Documentation](https://cloud.google.com/storage/docs)
-- [Service Account Setup](https://cloud.google.com/iam/docs/creating-managing-service-account-keys)
-- [IAM Permissions](https://cloud.google.com/storage/docs/access-control/iam-permissions)
+- [Documentação GCS](https://cloud.google.com/storage/docs)
+- [Configuração de Service Account](https://cloud.google.com/iam/docs/creating-managing-service-account-keys)
+- [Permissões IAM](https://cloud.google.com/storage/docs/access-control/iam-permissions)
 
-### Technology Stack
-- [React Documentation](https://react.dev/)
-- [shadcn/ui Components](https://ui.shadcn.com/)
+### Stack de Tecnologia
+- [Documentação React](https://react.dev/)
+- [Componentes shadcn/ui](https://ui.shadcn.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Express.js](https://expressjs.com/)
 - [Docker](https://docs.docker.com/)
 
-## 📋 Documentation Standards
+## 📋 Padrões de Documentação
 
-### Keeping Documentation Current
+### Mantendo a Documentação Atualizada
 
-**When to Update Documentation:**
-- Adding new features or components
-- Changing API endpoints or data structures  
-- Modifying deployment processes
-- Updating dependencies or architecture decisions
+**Quando Atualizar a Documentação:**
+- Adicionando novos recursos ou componentes
+- Alterando endpoints da API ou estruturas de dados  
+- Modificando processos de deploy
+- Atualizando dependências ou decisões de arquitetura
 
-**Documentation Review Process:**
-1. Update relevant documentation files
-2. Test all code examples and commands
-3. Verify links and references are working
-4. Update version numbers if applicable
-5. Consider impact on CLAUDE.md
+**Processo de Revisão da Documentação:**
+1. Atualizar arquivos de documentação relevantes
+2. Testar todos os exemplos de código e comandos
+3. Verificar se links e referências estão funcionando
+4. Atualizar números de versão se aplicável
+5. Considerar impacto no CLAUDE.md
 
-### Contributing to Documentation
+### Contribuindo para a Documentação
 
-**File Structure:**
+**Estrutura de Arquivos:**
 ```
 docs/
-├── README.md           # This overview file
-├── setup-guide.md      # Environment setup  
-├── development.md      # Development workflows
-├── architecture.md     # System architecture
-├── api.md             # API reference
-└── deployment.md      # Production deployment
+├── README.md           # Este arquivo de visão geral
+├── setup-guide.md      # Configuração do ambiente  
+├── development.md      # Fluxos de trabalho de desenvolvimento
+├── architecture.md     # Arquitetura do sistema
+├── api.md             # Referência da API
+└── deployment.md      # Deploy em produção
 ```
 
-**Writing Guidelines:**
-- Use clear, concise language
-- Include code examples that work
-- Add Mermaid diagrams for complex concepts
-- Provide troubleshooting sections
-- Test all instructions before publishing
+**Diretrizes de Escrita:**
+- Usar linguagem clara e concisa
+- Incluir exemplos de código que funcionem
+- Adicionar diagramas Mermaid para conceitos complexos
+- Fornecer seções de solução de problemas
+- Testar todas as instruções antes de publicar
 
-## 🚨 Getting Help
+## 🚨 Obtendo Ajuda
 
-### Common Issues
-- Check [Setup Guide](./setup-guide.md#troubleshooting) for environment issues
-- Review [Development Guide](./development.md#common-issues-and-solutions) for coding problems
-- See [Deployment Guide](./deployment.md#troubleshooting) for production issues
+### Problemas Comuns
+- Verifique o [Guia de Configuração](./setup-guide.md#troubleshooting) para problemas de ambiente
+- Revise o [Guia de Desenvolvimento](./development.md#common-issues-and-solutions) para problemas de codificação
+- Veja o [Guia de Deploy](./deployment.md#troubleshooting) para problemas de produção
 
-### Support Channels
-1. **Documentation**: Start with these docs
-2. **Code Comments**: Check inline documentation
-3. **Issue Tracking**: Use GitHub Issues for bugs
-4. **Architecture Questions**: Review [Architecture Overview](./architecture.md)
+### Canais de Suporte
+1. **Documentação**: Comece com estas docs
+2. **Comentários no Código**: Verifique a documentação inline
+3. **Rastreamento de Issues**: Use GitHub Issues para bugs
+4. **Questões de Arquitetura**: Revise a [Visão Geral da Arquitetura](./architecture.md)
 
 ---
 
-**Last Updated**: Auto-generated documentation - keep this current with your project development.
+**Última Atualização**: Documentação auto-gerada - mantenha atualizada com o desenvolvimento do seu projeto.

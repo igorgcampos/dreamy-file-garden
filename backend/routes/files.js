@@ -69,7 +69,7 @@ const validateFileId = [
 router.get('/', optionalAuth, [
   query('page').optional().isInt({ min: 1 }).toInt().withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).toInt().withMessage('Limit must be between 1 and 100'),
-  query('search').optional().trim().withMessage('Search term is invalid'),
+  query('search').optional().trim(),
   query('type').optional().isIn(['image', 'document', 'video', 'audio', 'other']).withMessage('Invalid file type'),
   query('sortBy').optional().isIn(['name', 'size', 'createdAt', 'downloadCount']).withMessage('Invalid sort field'),
   query('sortOrder').optional().isIn(['asc', 'desc']).withMessage('Invalid sort order'),

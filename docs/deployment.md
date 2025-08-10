@@ -1,35 +1,35 @@
-# Deployment Guide
+# Guia de Deploy
 
-Production deployment guide for the CloudStorage application.
+Guia de deploy em produção para a aplicação CloudStorage.
 
-## Deployment Overview
+## Visão Geral do Deploy
 
-The CloudStorage application is designed for containerized deployment using Docker and can be deployed on various platforms:
+A aplicação CloudStorage foi projetada para deploy containerizado usando Docker e pode ser implantada em várias plataformas:
 
-- **Development**: Docker Compose (local)
-- **Production**: Docker containers on cloud platforms
-- **Supported Platforms**: AWS ECS, Google Cloud Run, Azure Container Instances, DigitalOcean App Platform
+- **Desenvolvimento**: Docker Compose (local)
+- **Produção**: Containers Docker em plataformas de nuvem
+- **Plataformas Suportadas**: AWS ECS, Google Cloud Run, Azure Container Instances, DigitalOcean App Platform
 
-## Docker Architecture
+## Arquitetura Docker
 
 ```mermaid
 graph TB
     subgraph "Docker Compose Stack"
-        subgraph "Frontend Container"
-            F[React Build]
-            N[nginx Server]
+        subgraph "Container Frontend"
+            F[Build React]
+            N[Servidor nginx]
             F --> N
         end
         
-        subgraph "Backend Container" 
-            B[Node.js App]
-            E[Environment Variables]
-            K[Service Account Key]
+        subgraph "Container Backend" 
+            B[Aplicação Node.js]
+            E[Variáveis de Ambiente]
+            K[Chave da Conta de Serviço]
             B --> E
             B --> K
         end
         
-        subgraph "External Services"
+        subgraph "Serviços Externos"
             GCS[Google Cloud Storage]
         end
         
@@ -40,31 +40,31 @@ graph TB
     Internet --> N
 ```
 
-## Production Deployment
+## Deploy em Produção
 
-### 1. Pre-Deployment Checklist
+### 1. Checklist Pré-Deploy
 
-**Google Cloud Setup:**
-- [ ] GCP project created
-- [ ] Storage bucket created with proper permissions
-- [ ] Service account with Storage Object Admin role
-- [ ] Service account key file downloaded
+**Configuração Google Cloud:**
+- [ ] Projeto GCP criado
+- [ ] Bucket de armazenamento criado com permissões adequadas
+- [ ] Conta de serviço com role Storage Object Admin
+- [ ] Arquivo de chave da conta de serviço baixado
 
-**Security:**
-- [ ] Environment variables configured (no hardcoded secrets)
-- [ ] Service account key secured (not in version control)
-- [ ] CORS configured for production domain
-- [ ] HTTPS certificate ready
+**Segurança:**
+- [ ] Variáveis de ambiente configuradas (sem secrets hardcoded)
+- [ ] Chave da conta de serviço protegida (não no controle de versão)
+- [ ] CORS configurado para domínio de produção
+- [ ] Certificado HTTPS pronto
 
-**Infrastructure:**
-- [ ] Domain name configured
-- [ ] SSL/TLS certificate obtained
-- [ ] Load balancer configured (if using multiple instances)
-- [ ] Monitoring and logging setup
+**Infraestrutura:**
+- [ ] Nome de domínio configurado
+- [ ] Certificado SSL/TLS obtido
+- [ ] Load balancer configurado (se usando múltiplas instâncias)
+- [ ] Monitoramento e logging configurados
 
-### 2. Environment Configuration
+### 2. Configuração do Ambiente
 
-**Production Environment Variables:**
+**Variáveis de Ambiente de Produção:**
 
 # backend/.env.production
 GCP_PROJECT=your-production-project-id
@@ -75,15 +75,15 @@ PORT=3001
 NODE_ENV=production
 
 
-**Frontend Environment:**
+**Ambiente Frontend:**
 
 # .env.production  
 VITE_API_URL=https://api.yourdomain.com
 
 
-### 3. Docker Production Configuration
+### 3. Configuração Docker de Produção
 
-**Production docker-compose.yml:**
+**docker-compose.yml de produção:**
 
 version: '3.8'
 services:
@@ -131,20 +131,20 @@ networks:
     driver: bridge
 
 
-**Production Dockerfile.prod (Backend):**
+**Dockerfile.prod de produção (Backend):**
 ```dockerfile
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Install dependencies
+# Instalar dependências
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Copy source code
+# Copiar código fonte
 COPY . .
 
-# Create non-root user
+# Criar usuário não-root
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S backend -u 1001
 USER backend
@@ -158,9 +158,9 @@ EXPOSE 3001
 CMD ["node", "index.js"]
 ```
 
-**Production Dockerfile.prod (Frontend):**
+**Dockerfile.prod de produção (Frontend):**
 ```dockerfile
-# Build stage
+# Estágio de build
 FROM node:18-alpine as builder
 
 WORKDIR /app
@@ -173,16 +173,16 @@ ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build
 
-# Production stage
+# Estágio de produção
 FROM nginx:alpine
 
-# Copy build files
+# Copiar arquivos de build
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration
+# Copiar configuração nginx
 COPY nginx.prod.conf /etc/nginx/nginx.conf
 
-# Create nginx user
+# Criar usuário nginx
 RUN adduser -D -s /bin/sh nginx || true
 
 EXPOSE 80 443
@@ -190,7 +190,7 @@ EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-### 4. nginx Production Configuration
+### 4. Configuração nginx de Produção
 
 **nginx.prod.conf:**
 ```nginx
@@ -223,7 +223,7 @@ http {
     types_hash_max_size 2048;
     client_max_body_size 500M;
 
-    # Gzip compression
+    # Compressão Gzip
     gzip on;
     gzip_vary on;
     gzip_min_length 10240;
@@ -237,7 +237,7 @@ http {
         application/xml+rss
         application/json;
 
-    # Security headers
+    # Headers de segurança
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
@@ -247,7 +247,7 @@ http {
         listen 80;
         server_name yourdomain.com www.yourdomain.com;
         
-        # Redirect HTTP to HTTPS
+        # Redirecionar HTTP para HTTPS
         return 301 https://$server_name$request_uri;
     }
 
@@ -258,7 +258,7 @@ http {
         root /usr/share/nginx/html;
         index index.html;
 
-        # SSL configuration
+        # Configuração SSL
         ssl_certificate /etc/nginx/ssl/cert.pem;
         ssl_certificate_key /etc/nginx/ssl/key.pem;
         ssl_protocols TLSv1.2 TLSv1.3;
@@ -267,13 +267,13 @@ http {
         ssl_session_cache shared:SSL:10m;
         ssl_session_timeout 10m;
 
-        # Static files with caching
+        # Arquivos estáticos com cache
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
         }
 
-        # API proxy
+        # Proxy da API
         location /api/ {
             proxy_pass http://backend:3001/;
             proxy_set_header Host $host;
@@ -284,7 +284,7 @@ http {
             proxy_connect_timeout 75s;
         }
 
-        # React routing
+        # Roteamento React
         location / {
             try_files $uri $uri/ /index.html;
         }
@@ -299,11 +299,11 @@ http {
 }
 ```
 
-## Cloud Platform Deployment
+## Deploy em Plataformas de Nuvem
 
 ### Google Cloud Run
 
-**1. Build and Push Container:**
+**1. Build e Push do Container:**
 ```bash
 # Build backend
 gcloud builds submit ./backend --tag gcr.io/PROJECT-ID/cloudstorage-backend
@@ -312,7 +312,7 @@ gcloud builds submit ./backend --tag gcr.io/PROJECT-ID/cloudstorage-backend
 gcloud builds submit . --tag gcr.io/PROJECT-ID/cloudstorage-frontend
 ```
 
-**2. Deploy Services:**
+**2. Deploy dos Serviços:**
 ```bash
 # Deploy backend
 gcloud run deploy cloudstorage-backend \
@@ -417,50 +417,50 @@ services:
     value: https://backend-service-url.ondigitalocean.app
 ```
 
-## Security Hardening
+## Hardening de Segurança
 
-### 1. Container Security
+### 1. Segurança de Container
 ```dockerfile
-# Use non-root user
+# Usar usuário não-root
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S backend -u 1001
 USER backend
 
-# Remove package managers
+# Remover gerenciadores de pacotes
 RUN apk del apk-tools
 
-# Set read-only root filesystem
-# Add to docker-compose.yml:
+# Configurar sistema de arquivos raiz somente leitura
+# Adicionar ao docker-compose.yml:
 # read_only: true
 # tmpfs:
 #   - /tmp
 ```
 
-### 2. Environment Security
+### 2. Segurança do Ambiente
 ```bash
-# Encrypt environment variables
-# Use Docker secrets or cloud secret managers
+# Criptografar variáveis de ambiente
+# Usar Docker secrets ou gerenciadores de secrets da nuvem
 
-# Example with Docker Swarm
+# Exemplo com Docker Swarm
 echo "your-gcp-project" | docker secret create gcp_project -
 ```
 
-### 3. Network Security
+### 3. Segurança de Rede
 ```yaml
 # docker-compose.yml
 networks:
   app-network:
     driver: bridge
-    internal: true  # No external access except through nginx
+    internal: true  # Sem acesso externo exceto através do nginx
 ```
 
-## Monitoring and Logging
+## Monitoramento e Logging
 
-### 1. Application Monitoring
+### 1. Monitoramento da Aplicação
 
 **Health Checks:**
 ```javascript
-// Add to backend/index.js
+// Adicionar ao backend/index.js
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -470,9 +470,9 @@ app.get('/health', (req, res) => {
 });
 ```
 
-**Metrics Collection:**
+**Coleta de Métricas:**
 ```javascript
-// Add basic metrics
+// Adicionar métricas básicas
 let requestCount = 0;
 app.use((req, res, next) => {
   requestCount++;
@@ -488,11 +488,11 @@ app.get('/metrics', (req, res) => {
 });
 ```
 
-### 2. Log Management
+### 2. Gerenciamento de Logs
 
-**Structured Logging:**
+**Logging Estruturado:**
 ```javascript
-// Replace console.log with structured logging
+// Substituir console.log por logging estruturado
 const winston = require('winston');
 
 const logger = winston.createLogger({
@@ -503,73 +503,73 @@ const logger = winston.createLogger({
   ]
 });
 
-// Use in application
+// Usar na aplicação
 logger.info('File uploaded', { filename: file.name, size: file.size });
 ```
 
-## Scaling Considerations
+## Considerações de Escalabilidade
 
-### Horizontal Scaling
+### Escalabilidade Horizontal
 ```yaml
 # docker-compose.yml
 services:
   backend:
     deploy:
       replicas: 3
-    # Add load balancer
+    # Adicionar load balancer
 ```
 
-### Performance Optimization
-- Enable gzip compression
-- Use CDN for static assets
-- Implement caching headers
-- Add database for metadata (if needed)
-- Use connection pooling
+### Otimização de Performance
+- Habilitar compressão gzip
+- Usar CDN para assets estáticos
+- Implementar headers de cache
+- Adicionar banco de dados para metadados (se necessário)
+- Usar connection pooling
 
-## Backup and Recovery
+## Backup e Recuperação
 
-### Database Backup
+### Backup do Banco de Dados
 ```bash
-# If using database for metadata
-# Schedule regular backups
+# Se usando banco de dados para metadados
+# Agendar backups regulares
 0 2 * * * pg_dump -h localhost -U user -d cloudstorage > backup.sql
 ```
 
-### GCS Backup Strategy
-- Enable versioning on GCS bucket
-- Set up lifecycle policies for old versions
-- Cross-region replication for critical data
+### Estratégia de Backup GCS
+- Habilitar versionamento no bucket GCS
+- Configurar políticas de lifecycle para versões antigas
+- Replicação cross-region para dados críticos
 
-## Troubleshooting
+## Solução de Problemas
 
-### Common Deployment Issues
+### Problemas Comuns de Deploy
 
-**1. Container Won't Start**
+**1. Container Não Inicia**
 ```bash
-# Check logs
+# Verificar logs
 docker logs container-name
 
-# Check resource limits
+# Verificar limites de recursos
 docker stats container-name
 ```
 
-**2. Service Discovery Issues**
+**2. Problemas de Service Discovery**
 ```bash
-# Verify network connectivity
+# Verificar conectividade de rede
 docker exec container-name ping other-service
 ```
 
-**3. Permission Issues**
+**3. Problemas de Permissão**
 ```bash
-# Check service account permissions
+# Verificar permissões da conta de serviço
 gcloud projects get-iam-policy PROJECT-ID
 ```
 
-**4. SSL Certificate Issues**
+**4. Problemas de Certificado SSL**
 ```bash
-# Test certificate
+# Testar certificado
 openssl x509 -in cert.pem -text -noout
 
-# Verify SSL setup
+# Verificar configuração SSL
 curl -vI https://yourdomain.com
 ```

@@ -1,22 +1,22 @@
-# API Reference
+# Referência da API
 
-CloudStorage REST API for file management operations with Google Cloud Storage integration.
+API REST do CloudStorage para operações de gerenciamento de arquivos com integração ao Google Cloud Storage.
 
-## Base URL
-- **Development**: `http://localhost:3001`
-- **Production**: Set via `PUBLIC_URL` environment variable
+## URL Base
+- **Desenvolvimento**: `http://localhost:3001`
+- **Produção**: Definida via variável de ambiente `PUBLIC_URL`
 
-## Authentication
-Currently no authentication required. All endpoints are publicly accessible.
+## Autenticação
+Atualmente não é necessária autenticação. Todos os endpoints são publicamente acessíveis.
 
 ## Endpoints
 
-### List Files
-Get all files from the storage bucket.
+### Listar Arquivos
+Obter todos os arquivos do bucket de armazenamento.
 
 **Endpoint**: `GET /files`
 
-**Response**: `200 OK`
+**Resposta**: `200 OK`
 ```json
 [
   {
@@ -30,23 +30,23 @@ Get all files from the storage bucket.
 ]
 ```
 
-**Example**:
+**Exemplo**:
 ```bash
 curl http://localhost:3001/files
 ```
 
-### Upload File
-Upload a file to the storage bucket.
+### Upload de Arquivo
+Fazer upload de um arquivo para o bucket de armazenamento.
 
 **Endpoint**: `POST /upload`
 
 **Content-Type**: `multipart/form-data`
 
-**Form Fields**:
-- `file` (required): The file to upload
-- `description` (optional): File description
+**Campos do Formulário**:
+- `file` (obrigatório): O arquivo para upload
+- `description` (opcional): Descrição do arquivo
 
-**Response**: `200 OK`
+**Resposta**: `200 OK`
 ```json
 {
   "id": "uuid_filename.jpg",
@@ -59,7 +59,7 @@ Upload a file to the storage bucket.
 }
 ```
 
-**Example**:
+**Exemplo**:
 ```bash
 curl -X POST \
   -F "file=@/path/to/file.jpg" \
@@ -67,80 +67,80 @@ curl -X POST \
   http://localhost:3001/upload
 ```
 
-### Download File
-Download a file from the storage bucket.
+### Download de Arquivo
+Fazer download de um arquivo do bucket de armazenamento.
 
 **Endpoint**: `GET /files/:id`
 
-**Parameters**:
-- `id`: File identifier (URL encoded)
+**Parâmetros**:
+- `id`: Identificador do arquivo (URL encoded)
 
-**Response**: File binary data with appropriate headers
+**Resposta**: Dados binários do arquivo com headers apropriados
 - `Content-Disposition: attachment; filename="original_filename.ext"`
-- Content-Type matches original file type
+- Content-Type corresponde ao tipo original do arquivo
 
-**Example**:
+**Exemplo**:
 ```bash
 curl -O http://localhost:3001/files/uuid_filename.jpg
 ```
 
-### Delete File
-Remove a file from the storage bucket.
+### Excluir Arquivo
+Remover um arquivo do bucket de armazenamento.
 
 **Endpoint**: `DELETE /files/:id`
 
-**Parameters**:
-- `id`: File identifier (URL encoded)
+**Parâmetros**:
+- `id`: Identificador do arquivo (URL encoded)
 
-**Response**: `200 OK`
+**Resposta**: `200 OK`
 ```json
 {
   "success": true
 }
 ```
 
-**Example**:
+**Exemplo**:
 ```bash
 curl -X DELETE http://localhost:3001/files/uuid_filename.jpg
 ```
 
-## Error Responses
+## Respostas de Erro
 
-All endpoints return consistent error format:
+Todos os endpoints retornam formato de erro consistente:
 
-**Response**: `4xx` or `5xx`
+**Resposta**: `4xx` ou `5xx`
 ```json
 {
   "error": "Error description"
 }
 ```
 
-### Common Errors
+### Erros Comuns
 
-| Status | Error | Description |
+| Status | Erro | Descrição |
 |--------|-------|-------------|
-| 400 | No file uploaded | Upload endpoint called without file |
-| 404 | File not found | File does not exist in storage |
-| 500 | GCS error | Google Cloud Storage operation failed |
+| 400 | No file uploaded | Endpoint de upload chamado sem arquivo |
+| 404 | File not found | Arquivo não existe no armazenamento |
+| 500 | GCS error | Operação do Google Cloud Storage falhou |
 
-## File Naming Convention
-Files are stored with UUID prefixes to avoid naming conflicts:
+## Convenção de Nomenclatura de Arquivos
+Arquivos são armazenados com prefixos UUID para evitar conflitos de nomenclatura:
 - Original: `document.pdf`  
-- Stored as: `f47ac10b-58cc-4372-a567-0e02b2c3d479_document.pdf`
+- Armazenado como: `f47ac10b-58cc-4372-a567-0e02b2c3d479_document.pdf`
 
-## File Size Limits
-- Maximum file size: **500MB** per file
-- No limit on total storage (subject to GCS bucket limits)
+## Limites de Tamanho de Arquivo
+- Tamanho máximo de arquivo: **500MB** por arquivo
+- Sem limite no armazenamento total (sujeito aos limites do bucket GCS)
 
-## Supported File Types
-All file types are supported. Common MIME types are preserved:
-- Images: `image/jpeg`, `image/png`, `image/gif`, etc.
-- Documents: `application/pdf`, `text/plain`, etc.
-- Video: `video/mp4`, `video/webm`, etc.
-- Audio: `audio/mpeg`, `audio/wav`, etc.
+## Tipos de Arquivo Suportados
+Todos os tipos de arquivo são suportados. Tipos MIME comuns são preservados:
+- Imagens: `image/jpeg`, `image/png`, `image/gif`, etc.
+- Documentos: `application/pdf`, `text/plain`, etc.
+- Vídeo: `video/mp4`, `video/webm`, etc.
+- Áudio: `audio/mpeg`, `audio/wav`, etc.
 
-## Rate Limiting
-Currently no rate limiting implemented.
+## Limitação de Taxa
+Atualmente não há limitação de taxa implementada.
 
-## CORS Configuration
-CORS is enabled for all origins in development. Configure appropriately for production.
+## Configuração CORS
+CORS está habilitado para todas as origens em desenvolvimento. Configure adequadamente para produção.
