@@ -33,13 +33,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check if user is authenticated on mount
   const checkAuth = useCallback(async () => {
     try {
-      const token = Cookies.get('accessToken') || localStorage.getItem('accessToken');
-      
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
+      // Always try API call since cookies are httpOnly
       const response = await authAPI.getProfile();
       const userData = response.data.user;
       
@@ -47,9 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(true);
       
     } catch (error: any) {
-      // Clear invalid tokens
-      Cookies.remove('accessToken');
-      Cookies.remove('refreshToken');
+      // Clear any localStorage tokens (cookies are httpOnly and cleared by server)
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       
@@ -148,8 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(data.user);
       setIsAuthenticated(true);
       
-      // Store tokens
-      storeTokens(data.tokens);
+      // Tokens are stored as httpOnly cookies by the server
       
       toast({
         title: 'Bem-vindo de volta!',
@@ -184,8 +175,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(authData.user);
       setIsAuthenticated(true);
       
-      // Store tokens
-      storeTokens(authData.tokens);
+      // Tokens are stored as httpOnly cookies by the server
       
       toast({
         title: 'Conta criada!',
@@ -245,8 +235,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authAPI.refreshToken(refreshTokenValue);
       const { tokens } = response.data;
       
-      // Store new tokens
-      storeTokens(tokens);
+      // New tokens are stored as httpOnly cookies by the server
       
     } catch (error) {
       // Refresh failed, logout user

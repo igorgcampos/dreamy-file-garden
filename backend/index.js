@@ -15,6 +15,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Trust proxy for nginx/docker setup - set before rate limiting
+app.set('trust proxy', 1); // Trust first proxy (nginx)
+
 // Connect to database
 connectDB();
 
@@ -31,7 +34,7 @@ app.use(helmet({
   },
 }));
 
-// Rate limiting
+// Rate limiting configuration (trust proxy set globally)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: process.env.NODE_ENV === 'production' ? 100 : 1000, // limit each IP to 100 requests per windowMs in production
@@ -41,11 +44,15 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for OAuth callback to avoid blocking Google redirects
+    return req.path === '/api/auth/google/callback';
+  }
 });
 
 const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs for auth endpoints
+  max: 10, // Increased from 5 to 10 for OAuth flows
   message: {
     error: 'Too many authentication attempts, please try again later.',
     code: 'AUTH_RATE_LIMIT_EXCEEDED'
@@ -61,7 +68,7 @@ app.use('/api', limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || ['http://localhost:8080', 'http://localhost:3000', 'http://localhost'],
+  origin: process.env.FRONTEND_URL || ['http://localhost', 'http://localhost:3000', 'http://localhost:8080'],
   credentials: true, // Allow cookies
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

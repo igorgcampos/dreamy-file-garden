@@ -26,6 +26,7 @@ Aplicação fullstack para upload, listagem, download e exclusão de arquivos na
 ## Estrutura
 - **Frontend:** React + Vite (porta 80)
 - **Backend:** Node.js + Express + Google Cloud Storage (porta 3001)
+- **Banco de Dados:** MongoDB (porta 27017) - gerencia usuários, autenticação e metadados de arquivos
 
 ## Pré-requisitos
 - [Docker](https://www.docker.com/get-started/)
@@ -70,16 +71,42 @@ Para habilitar login com Google, configure no [Google Cloud Console](https://con
 
 ## Estrutura dos containers
 - **dreamy-frontend**: Servidor nginx servindo o build do Vite
-- **dreamy-backend**: API Express conectada ao Google Cloud Storage
+- **dreamy-backend**: API Express conectada ao Google Cloud Storage e MongoDB
+- **cloudstorage-mongodb**: Banco MongoDB para dados de usuários e metadados de arquivos
 
 ## Endpoints do backend
-- `GET /files` — Lista arquivos
-- `POST /upload` — Upload de arquivo (campo: `file`, multipart/form-data)
-- `GET /files/:id` — Download
-- `DELETE /files/:id` — Excluir
+
+### Autenticação
+- `POST /api/auth/register` — Registro de usuário
+- `POST /api/auth/login` — Login com email/senha
+- `GET /api/auth/google` — Login com Google OAuth
+- `GET /api/auth/profile` — Perfil do usuário autenticado
+- `POST /api/auth/logout` — Logout
+
+### Gerenciamento de arquivos
+- `GET /api/files` — Lista arquivos do usuário
+- `POST /api/files/upload` — Upload de arquivo (campo: `file`, multipart/form-data)
+- `GET /api/files/:id/download` — Download de arquivo
+- `DELETE /api/files/:id` — Excluir arquivo
+
+### Funcionalidades do MongoDB
+- **Usuários**: Armazena dados de registro, OAuth Google, preferências
+- **Autenticação**: Gerencia tokens JWT, sessões e permissões  
+- **Metadados**: Informações dos arquivos (nome, tamanho, tipo, descrição)
+- **Controle de acesso**: Sistema de compartilhamento e permissões por arquivo
 
 ## Observações
 - O frontend espera que o backend esteja acessível em `/files` e `/upload` (ajuste o CORS se necessário).
 - O backend precisa do arquivo de chave de serviço do Google Cloud para funcionar.
+- Os arquivos físicos ficam no Google Cloud Storage, apenas metadados no MongoDB.
+
+## Documentação Adicional
+
+Para informações mais detalhadas, consulte:
+
+- [`docs/database.md`](docs/database.md) - Estrutura completa do MongoDB, schemas e funcionalidades
+- [`docs/architecture.md`](docs/architecture.md) - Arquitetura completa do sistema
+- [`docs/AUTHENTICATION.md`](docs/AUTHENTICATION.md) - Sistema de autenticação e OAuth
+- [`docs/api.md`](docs/api.md) - Documentação completa da API REST
 
 ---

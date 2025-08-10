@@ -36,19 +36,20 @@ const validateLogin = [
 
 // Helper function to set auth cookies
 const setAuthCookies = (res, accessToken, refreshToken) => {
-  const isProduction = process.env.NODE_ENV === 'production';
+  // Use secure cookies only on HTTPS (not just production)
+  const isSecure = process.env.NODE_ENV === 'production' && process.env.HTTPS === 'true';
   
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    secure: isSecure,
+    sameSite: isSecure ? 'strict' : 'lax',
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
   
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    secure: isSecure,
+    sameSite: isSecure ? 'strict' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
@@ -433,12 +434,12 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
         
         // Redirect to frontend with success
-        const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',')[0] : 'http://localhost:8080';
+        const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',')[0] : 'http://localhost';
         res.redirect(`${frontendUrl}?auth=success`);
         
       } catch (error) {
         console.error(`[${new Date().toISOString()}] Google OAuth callback error:`, error);
-        const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',')[0] : 'http://localhost:8080';
+        const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',')[0] : 'http://localhost';
         res.redirect(`${frontendUrl}?error=oauth_callback_failed`);
       }
     }
