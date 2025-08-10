@@ -117,7 +117,7 @@ const Index = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout}>
                       <LogIn className="mr-2 h-4 w-4" />
-                      Log out
+                      Sair
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -127,12 +127,12 @@ const Index = () => {
                     variant="ghost" 
                     onClick={() => handleAuthClick('login')}
                   >
-                    Sign In
+                    Entrar
                   </Button>
                   <Button 
                     onClick={() => handleAuthClick('register')}
                   >
-                    Sign Up
+                    Criar conta
                   </Button>
                 </div>
               )}
