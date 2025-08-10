@@ -4,7 +4,7 @@ import { toast } from '@/hooks/use-toast';
 import { filesAPI } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://44.222.181.172:3001';
+const API_URL = import.meta.env.VITE_API_URL || window.location.origin;
 
 declare global {
   interface ImportMetaEnv {

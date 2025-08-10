@@ -33,7 +33,7 @@ export const GoogleOAuthButton: React.FC<GoogleOAuthButtonProps> = ({
   className 
 }) => {
   const handleGoogleLogin = () => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://44.222.181.172:3001';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
     window.location.href = `${API_URL}/api/auth/google`;
   };
 

@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://44.222.181.172:3001';
+const API_URL = import.meta.env.VITE_API_URL || window.location.origin;
 
 // Create axios instance
 export const api = axios.create({

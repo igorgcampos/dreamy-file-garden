@@ -76,28 +76,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       checkAuth();
       
       toast({
-        title: 'Welcome!',
-        description: 'You have successfully signed in with Google.',
+        title: 'Bem-vindo!',
+        description: 'Você fez login com sucesso usando o Google.',
       });
       
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (error) {
-      let errorMessage = 'Authentication failed';
+      let errorMessage = 'Falha na autenticação';
       
       switch (error) {
         case 'oauth_failed':
-          errorMessage = 'Google OAuth authentication failed';
+          errorMessage = 'Falha na autenticação Google OAuth';
           break;
         case 'oauth_callback_failed':
-          errorMessage = 'OAuth callback processing failed';
+          errorMessage = 'Falha no processamento do callback OAuth';
           break;
         default:
-          errorMessage = 'Authentication error occurred';
+          errorMessage = 'Ocorreu um erro de autenticação';
       }
       
       toast({
-        title: 'Authentication Error',
+        title: 'Erro de Autenticação',
         description: errorMessage,
         variant: 'destructive',
       });
@@ -152,18 +152,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       storeTokens(data.tokens);
       
       toast({
-        title: 'Welcome back!',
-        description: `Logged in as ${data.user.name}`,
+        title: 'Bem-vindo de volta!',
+        description: `Logado como ${data.user.name}`,
       });
       
     } catch (error: any) {
       const authError: AuthError = error.response?.data || { 
-        error: 'Login failed',
+        error: 'Falha no login',
         code: 'UNKNOWN_ERROR'
       };
       
       toast({
-        title: 'Login failed',
+        title: 'Falha no login',
         description: authError.error,
         variant: 'destructive',
       });
@@ -188,18 +188,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       storeTokens(authData.tokens);
       
       toast({
-        title: 'Account created!',
-        description: `Welcome to CloudStorage, ${authData.user.name}!`,
+        title: 'Conta criada!',
+        description: `Bem-vindo ao CloudStorage, ${authData.user.name}!`,
       });
       
     } catch (error: any) {
       const authError: AuthError = error.response?.data || { 
-        error: 'Registration failed',
+        error: 'Falha no cadastro',
         code: 'UNKNOWN_ERROR'
       };
       
       toast({
-        title: 'Registration failed',
+        title: 'Falha no cadastro',
         description: authError.error,
         variant: 'destructive',
       });
@@ -228,8 +228,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('refreshToken');
       
       toast({
-        title: 'Logged out',
-        description: 'You have been successfully logged out.',
+        title: 'Deslogado',
+        description: 'Você foi deslogado com sucesso.',
       });
     }
   };
@@ -263,18 +263,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(updatedUser);
       
       toast({
-        title: 'Profile updated',
-        description: 'Your profile has been successfully updated.',
+        title: 'Perfil atualizado',
+        description: 'Seu perfil foi atualizado com sucesso.',
       });
       
     } catch (error: any) {
       const authError: AuthError = error.response?.data || { 
-        error: 'Profile update failed',
+        error: 'Falha na atualização do perfil',
         code: 'UNKNOWN_ERROR'
       };
       
       toast({
-        title: 'Update failed',
+        title: 'Falha na atualização',
         description: authError.error,
         variant: 'destructive',
       });
@@ -288,18 +288,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await authAPI.changePassword({ currentPassword, newPassword });
       
       toast({
-        title: 'Password changed',
-        description: 'Your password has been successfully updated.',
+        title: 'Senha alterada',
+        description: 'Sua senha foi atualizada com sucesso.',
       });
       
     } catch (error: any) {
       const authError: AuthError = error.response?.data || { 
-        error: 'Password change failed',
+        error: 'Falha na alteração da senha',
         code: 'UNKNOWN_ERROR'
       };
       
       toast({
-        title: 'Password change failed',
+        title: 'Falha na alteração da senha',
         description: authError.error,
         variant: 'destructive',
       });

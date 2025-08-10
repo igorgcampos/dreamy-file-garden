@@ -7,6 +7,7 @@ COPY . .
 
 # Stage 2: Run
 FROM node:20-alpine
+RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=build /app /app
 EXPOSE 3001
