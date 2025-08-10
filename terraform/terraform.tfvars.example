@@ -1,0 +1,51 @@
+# Terraform variables configuration example
+# Copy this file to terraform.tfvars and customize for your environment
+
+# Required: Your GCP Project ID
+project_id = "your-gcp-project-id"
+
+# Region selection based on your location for optimal performance
+# us-central1 (Iowa) - Generally cheapest in US
+# europe-west1 (Belgium) - Good for Europe
+# asia-southeast1 (Singapore) - Good for Asia
+region = "us-central1"
+
+# Environment: production, staging, development
+environment = "production"
+
+# Application name (used for resource naming)
+app_name = "cloudstorage"
+
+# Custom domain (optional) - requires DNS configuration
+# Leave empty to use default Cloud Run domain
+custom_domain = ""
+
+# Google OAuth configuration (optional)
+# Set to true if you want to enable Google login
+enable_google_oauth = false
+google_client_id = ""
+google_client_secret = ""
+
+# Cost control settings
+monthly_budget = 150  # USD - set your monthly budget limit
+billing_account = ""  # Your GCP billing account ID (required for budget alerts)
+
+# Notification channels for monitoring alerts
+# Create notification channels in Cloud Monitoring first
+notification_channels = [
+  # "projects/your-project/notificationChannels/CHANNEL_ID"
+]
+
+# Performance tuning (optional advanced settings)
+# These can be adjusted based on your specific needs
+
+# Example values for different use cases:
+# 
+# Small business (low traffic):
+# monthly_budget = 50
+# 
+# Medium business (moderate traffic):
+# monthly_budget = 150
+# 
+# Enterprise (high traffic):
+# monthly_budget = 500
