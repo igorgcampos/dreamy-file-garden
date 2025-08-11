@@ -118,6 +118,9 @@ export const useFileStorage = () => {
         title: 'Upload concluído',
         description: `${file.name} foi enviado com sucesso!`,
       });
+
+      // Refresh file list after successful upload
+      await fetchFiles();
       
       return realCloudFile;
       
@@ -137,7 +140,7 @@ export const useFileStorage = () => {
       
       throw error;
     }
-  }, [isAuthenticated, fetchFiles]);
+  }, [isAuthenticated]);
 
   // Delete file from backend with optimistic updates
   const deleteFile = useCallback(async (fileId: string) => {
